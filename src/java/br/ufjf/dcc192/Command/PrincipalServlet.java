@@ -6,13 +6,10 @@
 package br.ufjf.dcc192.Command;
 
 import java.io.IOException;
-import java.io.PrintWriter;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -23,7 +20,7 @@ import javax.servlet.http.HttpServletResponse;
  *
  * @author YanNotebook
  */
-@WebServlet(name = "PrincipalServlet", urlPatterns = {"/index.html", "/usuario-novo.html", "/cadastro.html"
+@WebServlet(name = "PrincipalServlet", urlPatterns = {"/index.html", "/usuario-novo.html", "/cadastro.html","/login.html","/logout.html"
     
 })
 public class PrincipalServlet extends HttpServlet {
@@ -33,6 +30,8 @@ public class PrincipalServlet extends HttpServlet {
         Map<String, String> rotas = new HashMap<>();
         rotas.put("/index.html", "br.ufjf.dcc192.Command.IndexCommand");
         rotas.put("/usuario-novo.html", "br.ufjf.dcc192.Command.CadastroCommand");
+        rotas.put("/login.html", "br.ufjf.dcc192.Command.LoginCommand");
+        rotas.put("/logout.html", "br.ufjf.dcc192.Command.LogoutCommand");
         
        
     
@@ -55,7 +54,9 @@ public class PrincipalServlet extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         Map<String, String> rotas = new HashMap<>();
         rotas.put("/index.html", "br.ufjf.dcc192.Command.IndexCommand");     
-        rotas.put("/cadastro.html", "br.ufjf.dcc192.Command.CadastroCommandPost");        
+        rotas.put("/cadastro.html", "br.ufjf.dcc192.Command.CadastroCommandPost");     
+        rotas.put("/login.html", "br.ufjf.dcc192.Command.LoginCommandPost");    
+        
     
         String clazzName = rotas.get(request.getServletPath());
         try {

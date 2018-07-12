@@ -10,21 +10,32 @@ package br.ufjf.dcc192.Classes;
  * @author rodri
  */
 public class Usuario {
-    
+    private int id;
     private String nome;
     private String usuario;
     private String email;
     private String senha;
 
-    public Usuario(String nome, String usuario, String email, String senha) {
+    public Usuario(int id,String nome, String usuario, String email, String senha) {
         this.nome = nome;
         this.usuario = usuario;
         this.email = email;
         this.senha = senha;
+        this.id = id;
     }
 
     public Usuario() {
     }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+    
+    
 
     public String getNome() {
         return nome;

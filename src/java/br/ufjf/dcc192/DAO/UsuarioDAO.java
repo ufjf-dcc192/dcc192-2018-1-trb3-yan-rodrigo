@@ -111,4 +111,22 @@ public class UsuarioDAO {
 
     }
 
+    public Usuario validaUsuario(String username, String password) {
+        int id = -1;
+        Usuario usuario = null;
+        try {
+            Statement comando = conexao.createStatement();
+            ResultSet resultado = comando.executeQuery("SELECT * from Usuario where nomeUsuario = '"
+                    +username+"' AND senha = '"+password+"'");
+            if(resultado.next()){
+                usuario = new Usuario(resultado.getInt("id"),resultado.getString("nome"),username,
+                resultado.getString("email"),password); 
+            }
+            
+        } catch (SQLException ex) {
+            Logger.getLogger(UsuarioDAO.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return usuario;
+    }
+
 }

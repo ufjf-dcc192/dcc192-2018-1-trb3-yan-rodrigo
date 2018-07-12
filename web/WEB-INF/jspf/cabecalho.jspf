@@ -1,3 +1,4 @@
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@page import="java.util.Date"%>
 <%@page contentType="text/html" pageEncoding="UTF-8"%><!DOCTYPE HTML>
 <html>
@@ -11,10 +12,23 @@
         <header>
             
             <h1><%=request.getAttribute("titulo")%></h1>
+            <h5>Olá, ${nome}</h5>
         </header>
         <aside>
             <menu>
                 <li><a href="index.html">Home</a></li>
+                <li><a href="item-listar.html">Meus Itens</a></li>
+                <li><a href="item.html">Buscar Item</a></li>
+                <%if(request.getSession().getAttribute("id") != null){
+                    
+                    %>
+                        <li><a href="logout.html">Logout</a></li>
+                    <%}else{%>
+                        <li><a href="login.html">Login</a></li>
+                
+                
+                    <%}%>
+                
                 
             </menu>
         </aside>
