@@ -20,7 +20,15 @@ public class Item {
     private Date dataAtualizacao;
     private Usuario usuario;
     private ArrayList<Comentario> comentarios;
+    private int id;
 
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
     public Item(String titulo, String descricao, String link, Date dataCriacao, Date dataAtualizacao) {
         this.usuario = new Usuario();
         this.titulo = titulo;

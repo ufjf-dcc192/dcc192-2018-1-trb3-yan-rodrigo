@@ -94,6 +94,24 @@ public class UsuarioDAO {
         return existe;
     }
     
+    public Usuario getUsuario(int id){
+        boolean existe = false;
+        try {
+            Statement comando = conexao.createStatement();
+            ResultSet resultado = comando.executeQuery("SELECT * from Usuario where id = "+id );
+            if(resultado.next()) {
+                return new Usuario(id, resultado.getString("nome"), resultado.getString("nomeusuario"),
+                        resultado.getString("email"), resultado.getString("senha"));
+            }
+            resultado.close();
+            comando.close();
+        } catch (SQLException ex) {
+            Logger.getLogger(UsuarioDAO.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+        return null;
+    }
+    
     public void addUsuario(Usuario u) {
         try {
             Statement comando = conexao.createStatement();

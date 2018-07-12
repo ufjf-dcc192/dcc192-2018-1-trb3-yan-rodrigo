@@ -17,17 +17,38 @@ public class Comentario {
     private Date dataCriacao;
     private Date dataAtualizacao; 
     private Item item;
+    private int id;
+    private Avaliacao avaliacao;
 
-    public Comentario(Usuario usuario,String texto, Date dataCriacao, Date dataAtualizacao,Item item) {
+    public Comentario(Usuario usuario,String texto, Date dataCriacao, Date dataAtualizacao,Item item, int id) {
         this.usuario = usuario;
         this.texto = texto;
         this.dataCriacao = dataCriacao;
         this.dataAtualizacao = dataAtualizacao;
         this.item = item;
+        this.id = id;
+        this.avaliacao = new Avaliacao();
+        this.avaliacao.setIdComentario(id);
     }
 
     public Comentario() {
         
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public Avaliacao getAvaliacao() {
+        return avaliacao;
+    }
+
+    public void setAvaliacao(Avaliacao avaliacao) {
+        this.avaliacao = avaliacao;
     }
 
     public Usuario getUsuario() {
