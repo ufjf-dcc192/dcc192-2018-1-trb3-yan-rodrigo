@@ -30,6 +30,7 @@ public class LoginCommandPost implements Command {
                     HttpSession session = request.getSession();
                     session.setAttribute("id", usuario.getId());
                     session.setAttribute("nome", usuario.getNome());
+                    session.setAttribute("user", usuario);
                     response.sendRedirect("index.html");
                    
                 } else {
