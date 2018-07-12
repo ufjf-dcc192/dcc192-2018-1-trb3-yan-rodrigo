@@ -14,6 +14,8 @@ class CadastroCommand implements Command {
                 RequestDispatcher dispachante = request.getRequestDispatcher("/WEB-INF/cadastro.jsp");
                 request.setAttribute("titulo",
                         "Mercado Preso");
+                request.setAttribute("usuarioCadastrado", false);
+                
                 dispachante.forward(request, response);
          
         }

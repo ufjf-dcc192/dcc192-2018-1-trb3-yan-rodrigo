@@ -23,7 +23,7 @@ import javax.servlet.http.HttpServletResponse;
  *
  * @author YanNotebook
  */
-@WebServlet(name = "PrincipalServlet", urlPatterns = {"/index.html", "/usuario-novo.html"
+@WebServlet(name = "PrincipalServlet", urlPatterns = {"/index.html", "/usuario-novo.html", "/cadastro.html"
     
 })
 public class PrincipalServlet extends HttpServlet {
@@ -54,9 +54,8 @@ public class PrincipalServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         Map<String, String> rotas = new HashMap<>();
-        rotas.put("/index.html", "br.ufjf.dcc192.Command.IndexCommand");
-        
-        
+        rotas.put("/index.html", "br.ufjf.dcc192.Command.IndexCommand");     
+        rotas.put("/cadastro.html", "br.ufjf.dcc192.Command.CadastroCommandPost");        
     
         String clazzName = rotas.get(request.getServletPath());
         try {

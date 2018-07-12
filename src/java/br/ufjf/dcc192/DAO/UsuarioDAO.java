@@ -28,7 +28,7 @@ public class UsuarioDAO {
         try {
             if (conexao == null) {
                 conexao = DriverManager.
-                        getConnection("jdbc:derby://localhost:1527/dcc-192-2018-1",
+                        getConnection("jdbc:derby://localhost:1527/dcc-192-2018-tbr3",
                                 "usuario", "usuario");
             }
         } catch (SQLException ex) {
@@ -76,14 +76,14 @@ public class UsuarioDAO {
     }
     
     
-    public boolean verificaUsuario(String nome, String nomeUsuario){
+    public boolean verificaUsuario(String email, String nomeUsuario){
         boolean existe = false;
         try {
             Statement comando = conexao.createStatement();
-            ResultSet resultado = comando.executeQuery("SELECT * from Usuario where Nome = '"+nome+"',nomeUsuario = '"+nomeUsuario+"'");
+            ResultSet resultado = comando.executeQuery("SELECT * from Usuario where Email = '"
+                    +email+"' AND nomeUsuario = '"+nomeUsuario+"'");
             if(resultado.next()) {
                 existe = true;
-
             }
             resultado.close();
             comando.close();
@@ -101,8 +101,9 @@ public class UsuarioDAO {
             
             
             
-             comando.executeUpdate("INSERT INTO Usuario(Nome,Email,Senha,nomeusuario) VALUES('"+u.getNome()+"','"+u.getEmail()+"'," + u.getSenha()
-                     + ",'"+u.getUsuario()+"')");
+             comando.executeUpdate("INSERT INTO Usuario(Nome,Email,Senha,nomeusuario) VALUES('"+u.getNome()+
+                     "','"+u.getEmail()+"','" + u.getSenha()
+                     + "','"+u.getUsuario()+"')");
             comando.close();
         } catch (SQLException ex) {
             Logger.getLogger(UsuarioDAO.class.getName()).log(Level.SEVERE, null, ex);
