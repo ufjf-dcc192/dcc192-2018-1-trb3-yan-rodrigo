@@ -22,7 +22,7 @@ import javax.servlet.http.HttpServletResponse;
  */
 @WebServlet(name = "PrincipalServlet", urlPatterns = {"/index.html",
     "/usuario-novo.html", "/cadastro.html","/login.html","/logout.html","/item-listar.html",
-    "/item-novo.html","/item-excluir.html","/item-editar.html"
+    "/item-novo.html","/item-excluir.html","/item-editar.html","/ranking.html","/item-ordena-listar.html"
     
 })
 public class PrincipalServlet extends HttpServlet {
@@ -38,6 +38,8 @@ public class PrincipalServlet extends HttpServlet {
         rotas.put("/item-novo.html", "br.ufjf.dcc192.Command.ItemNovoCommand");
         rotas.put("/item-excluir.html", "br.ufjf.dcc192.Command.ItemExcluirCommand");
         rotas.put("/item-editar.html", "br.ufjf.dcc192.Command.ItemEditarCommand");
+        rotas.put("/item-ordena-listar.html", "br.ufjf.dcc192.Command.ItemBuscarCommand");
+        rotas.put("/ranking.html", "br.ufjf.dcc192.Command.rankingCommand");
         
        
     
@@ -64,6 +66,7 @@ public class PrincipalServlet extends HttpServlet {
         rotas.put("/login.html", "br.ufjf.dcc192.Command.LoginCommandPost");    
         rotas.put("/item-novo.html", "br.ufjf.dcc192.Command.ItemNovoCommandPost");
         rotas.put("/item-editar.html", "br.ufjf.dcc192.Command.ItemEditarCommandPost");
+        rotas.put("/ranking.html", "br.ufjf.dcc192.Command.rankingCommandPost");
         
     
         String clazzName = rotas.get(request.getServletPath());

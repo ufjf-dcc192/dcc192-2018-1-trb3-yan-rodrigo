@@ -17,12 +17,14 @@
             <td>${item.getDataCriacao()}</td>
             <td>${item.getDataAtualizacao()}</td>
             <td>${item.getLink()}</td>
-            <td><a href="item-editar.html?idItem=${item.getId()}" >Editar</a> <a href="item-excluir.html?idItem=${item.getId()}">Excluir</a></td>
+            <c:if test="${logado}">
+                <td><a href="comentar.html?idItem=${item.getId()}" >Comentar</a> <a href="avaliar.html?idItem=${item.getId()}">Avaliar</a></td>
+            </c:if>
         </tr>
     </c:forEach>
     
 
-        <td><a href="item-novo.html"/>Novo Item<a></td>
+        
     
 </tbody>
 

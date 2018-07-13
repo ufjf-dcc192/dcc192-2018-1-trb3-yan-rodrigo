@@ -124,6 +124,72 @@ public class ItensDAO {
         return itens;
     }
 
+    public List<Item> listAll(String ordena) {
+        List<Item> itens = new ArrayList<>();
+        String itemNome = "";
+        switch (ordena) {
+            case "Data de Criação":
+                ordena = "SELECT id,dataatualizacao,datacriacao,descricao,links,titulo,idusuario from Item order by DataCriacao desc";
+                itemNome= "";
+                break;
+            case "Data de Atualização":
+                ordena = "SELECT id,dataatualizacao,datacriacao,descricao,links,titulo,idusuario from Item order by dataatualizacao desc";
+                itemNome= "";
+                break;
+            case "Número de Avaliações":
+                ordena = "SELECT Item.id,dataatualizacao,datacriacao,descricao,links,titulo,Item.idusuario, (curti + dislike) as curtidas from Item join avaliacao on Item.id = avaliacao.iditem order by (curtidas)";
+                itemNome= "Item.";
+                break;
+            case "Melhor Avaliação":
+                ordena = "SELECT Item.id,dataatualizacao,datacriacao,descricao,links,titulo,Item.idusuario, (curti - dislike) as curtidas from Item join avaliacao on Item.id = avaliacao.iditem order by (curtidas)";
+                itemNome= "Item.";
+                break;
+            default:
+                ordena = "SELECT Item.id,dataatualizacao,datacriacao,descricao,links,titulo,Item.idusuario, (curti - dislike) as curtidas from Item join avaliacao on Item.id = avaliacao.iditem order by (curtidas) desc";
+                itemNome= "Item.";
+                break;
+        }
+        try {
+            Statement comando = conexao.createStatement();
+            Statement comando2 = conexao.createStatement();
+            ResultSet resultado = comando.executeQuery(ordena);
+            while (resultado.next()) {
+                Item item = new Item();
+                item.setId(resultado.getInt(itemNome+"id"));
+                item.setDataAtualizacao(resultado.getDate("dataatualizacao"));
+                item.setDataCriacao(resultado.getDate("datacriacao"));
+                item.setDescricao(resultado.getString("descricao"));
+                item.setLink(resultado.getString("links"));
+                item.setTitulo(resultado.getString("titulo"));
+                item.setUsuario(UsuarioDAO.getInstace().getUsuario(resultado.getInt(itemNome+"idusuario")));
+                ResultSet resultado2 = comando2.executeQuery("SELECT idComentario,texto,datacriacao,dataatualizacao,(avaliacao.curti - avaliacao.dislike) as curtidas from Comentario inner join Avaliacao "
+                        + "on Comentario.id = idComentario "
+                        + "WHERE Comentario.iditem ="
+                        + item.getId() + " order by curtidas");
+                while (resultado2.next()) {
+                    item.getComentarios().add(new Comentario(
+                            UsuarioDAO.getInstace().getUsuario(resultado.getInt(itemNome+"id")),
+                            resultado2.getString("texto"),
+                            resultado2.getDate("dataCriacao"),
+                            resultado2.getDate("dataAtualizacao"),
+                            item,
+                            resultado2.getInt("idComentario")
+                    ));
+                    resultado2.close();
+                    comando2.close();
+                }
+                itens.add(item);
+            }
+            resultado.close();
+
+            comando.close();
+        } catch (SQLException ex) {
+            Logger.getLogger(ItensDAO.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return itens;
+    }
+
+    
     public Item getItem(int id) {
         try {
             Statement comando = conexao.createStatement();

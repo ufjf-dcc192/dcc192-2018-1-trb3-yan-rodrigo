@@ -18,7 +18,7 @@
             <menu>
                 <li><a href="index.html">Home</a></li>
                 <li><a href="item-listar.html">Meus Itens</a></li>
-                <li><a href="item.html">Buscar Item</a></li>
+                <li><a href="ranking.html">Buscar Item</a></li>
                 <%if(request.getSession().getAttribute("id") != null){
                     
                     %>
