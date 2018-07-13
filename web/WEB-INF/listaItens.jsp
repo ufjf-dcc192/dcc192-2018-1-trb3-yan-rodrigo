@@ -14,7 +14,7 @@
             <td>${item.getDescricao()}</td>
             <td>${item.getDataCriacao()}</td>
             <td>${item.getDataAtualizacao()}</td>
-            <td><a href="item-editar.html">Editar</a> <a href="item-excluir.html">Excluir</a></td>
+            <td><a href="item-editar.html?idItem=${item.getId()}" >Editar</a> <a href="item-excluir.html?idItem=${item.getId()}">Excluir</a></td>
         </tr>
     </c:forEach>
     

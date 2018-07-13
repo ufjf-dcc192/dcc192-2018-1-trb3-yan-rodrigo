@@ -3,6 +3,7 @@ package br.ufjf.dcc192.DAO;
 import br.ufjf.dcc192.Classes.Avaliacao;
 import br.ufjf.dcc192.Classes.Comentario;
 import br.ufjf.dcc192.Classes.Item;
+import br.ufjf.dcc192.Classes.Usuario;
 import java.sql.Statement;
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -10,24 +11,23 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-public class ItensDAO {
+public class AvaliacaoDAO {
 
-    private static ItensDAO instancia;
+    private static AvaliacaoDAO instancia;
     private static Connection conexao;
 
-    public static ItensDAO getInstace() {
+    public static AvaliacaoDAO getInstace() {
         if (instancia == null) {
-            instancia = new ItensDAO();
+            instancia = new AvaliacaoDAO();
         }
         return instancia;
     }
 
-    public ItensDAO() {
+    public AvaliacaoDAO() {
         try {
             if (conexao == null) {
                 conexao = DriverManager.
@@ -35,7 +35,7 @@ public class ItensDAO {
                                 "usuario", "usuario");
             }
         } catch (SQLException ex) {
-            Logger.getLogger(ItensDAO.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(AvaliacaoDAO.class.getName()).log(Level.SEVERE, null, ex);
         }
 
     }
@@ -77,11 +77,11 @@ public class ItensDAO {
             resultado.close();
             comando.close();
         } catch (SQLException ex) {
-            Logger.getLogger(ItensDAO.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(AvaliacaoDAO.class.getName()).log(Level.SEVERE, null, ex);
         }
         return item;
     }
-
+    
     public List<Item> listAll(int id) {
         List<Item> itens = new ArrayList<>();
         try {
@@ -98,7 +98,7 @@ public class ItensDAO {
                 item.setTitulo(resultado.getString("titulo"));
                 item.setUsuario(UsuarioDAO.getInstace().getUsuario(resultado.getInt("idusuario")));
                 ResultSet resultado2 = comando2.executeQuery("SELECT idComentario,texto,datacriacao,dataatualizacao,(avaliacao.curti - avaliacao.dislike) as curtidas from Comentario inner join Avaliacao "
-                        + "on Comentario.id = idComentario "
+                         + "on Comentario.id = idComentario "
                         + "WHERE Comentario.iditem ="
                         + item.getId() + " order by curtidas");
                 while (resultado2.next()) {
@@ -109,67 +109,30 @@ public class ItensDAO {
                             resultado2.getDate("dataAtualizacao"),
                             item,
                             resultado2.getInt("idComentario")
+                            
                     ));
-                    resultado2.close();
-                    comando2.close();
+                     resultado2.close();
+                     comando2.close();
                 }
                 itens.add(item);
             }
             resultado.close();
-
+           
             comando.close();
         } catch (SQLException ex) {
-            Logger.getLogger(ItensDAO.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(AvaliacaoDAO.class.getName()).log(Level.SEVERE, null, ex);
         }
         return itens;
     }
 
-    public Item getItem(int id) {
+    public void removeAvaliacao(int idItem) {
         try {
             Statement comando = conexao.createStatement();
-            ResultSet resultado = comando.executeQuery("SELECT * from Item WHERE id = " + id);
-            Item item = null;
-            if (resultado.next()) {
-                item = new Item();
-                item.setId(id);
-                item.setDescricao(resultado.getString("descricao"));
-                item.setLink(resultado.getString("links"));
-                item.setTitulo(resultado.getString("titulo"));
-            }
-            return item;         
-        } catch (SQLException ex) {
-            Logger.getLogger(ItensDAO.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        return null;
-    }
-    
-
-    public void editaItem(int id, String titulo, String descricao, String links) {
-        try {
-            Statement comando = conexao.createStatement();
-            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-
-            comando.executeUpdate("Update Item set titulo = '" + titulo + "' , "
-                    + "descricao = '" + descricao + "' , links = '" + links
-                    + "' , dataatualizacao= '" + sdf.format(new Date())
-                    + "' where id =" + id);
+            comando.executeUpdate(String.format("DELETE FROM Avaliacao WHERE idItem=%d",
+                    idItem));
             comando.close();
         } catch (SQLException ex) {
-            Logger.getLogger(ItensDAO.class.getName()).log(Level.SEVERE, null, ex);
-        }
-
-    }
-
-    public void removeItem(int id) {
-        try {
-            Statement comando = conexao.createStatement();
-            AvaliacaoDAO.getInstace().removeAvaliacao(id);
-            ComentarioDAO.getInstace().removeComentario(id);
-            comando.executeUpdate(String.format("DELETE FROM Item WHERE id=%d",
-                    id));
-            comando.close();
-        } catch (SQLException ex) {
-            Logger.getLogger(ItensDAO.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(AvaliacaoDAO.class.getName()).log(Level.SEVERE, null, ex);
         }
 
     }
@@ -179,7 +142,7 @@ public class ItensDAO {
             Statement comando = conexao.createStatement();
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 
-            comando.executeUpdate("INSERT INTO Item(titulo, descricao,links,datacriacao,dataatualizacao,idusuario)"
+           comando.executeUpdate("INSERT INTO Item(titulo, descricao,links,datacriacao,dataatualizacao,idusuario)"
                     + " VALUES('" + i.getTitulo()
                     + "','" + i.getDescricao() + "','" + i.getLink()
                     + "','" + sdf.format(i.getDataCriacao())
@@ -188,7 +151,7 @@ public class ItensDAO {
                     + ")");
             comando.close();
         } catch (SQLException ex) {
-            Logger.getLogger(ItensDAO.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(AvaliacaoDAO.class.getName()).log(Level.SEVERE, null, ex);
         }
 
     }
@@ -211,17 +174,17 @@ public class ItensDAO {
                         item,
                         resultado2.getInt("idComentario")
                 );
-                c.setAvaliacao(new Avaliacao(resultado2.getInt("curtir"),
-                        resultado2.getInt("Avaliacao.Dislike"),
-                        resultado2.getInt("Avaliacao.id"),
-                        item.getUsuario().getId(),
-                        item.getId(),
-                        resultado2.getInt("idComentario")));
+                c.setAvaliacao(new Avaliacao(resultado2.getInt("curtir")
+                        , resultado2.getInt("Avaliacao.Dislike")
+                        ,resultado2.getInt("Avaliacao.id")
+                        , item.getUsuario().getId()
+                        , item.getId()  
+                        , resultado2.getInt("idComentario")));
                 comentariosItem.add(c);
-
+                
             }
         } catch (SQLException ex) {
-            Logger.getLogger(ItensDAO.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(AvaliacaoDAO.class.getName()).log(Level.SEVERE, null, ex);
         }
         return comentariosItem;
     }
