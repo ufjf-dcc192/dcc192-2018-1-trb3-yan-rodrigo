@@ -15,7 +15,7 @@ class ItemComentariosCommand implements Command {
     public void exec(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         
             HttpSession session = request.getSession();
-            request.setAttribute("comentario", ComentarioDAO.getInstace().listComentariosPorData(Integer.parseInt(request.getParameter("idItem"))));
+            request.setAttribute("comentarios", ComentarioDAO.getInstace().listComentariosPorData(Integer.parseInt(request.getParameter("idItem"))));
             request.setAttribute("idItem", request.getParameter("idItem"));
             RequestDispatcher dispachante = request.getRequestDispatcher("/WEB-INF/listarComentarioItem.jsp");
             request.setAttribute("titulo",

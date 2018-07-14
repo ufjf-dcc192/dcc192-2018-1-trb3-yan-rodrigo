@@ -23,7 +23,7 @@ import javax.servlet.http.HttpServletResponse;
 @WebServlet(name = "PrincipalServlet", urlPatterns = {"/index.html",
     "/usuario-novo.html", "/cadastro.html","/login.html","/logout.html","/item-listar.html",
     "/item-novo.html","/item-excluir.html","/item-editar.html","/ranking.html","/item-ordena-listar.html",
-    "/comentar.html"
+    "/comentar.html","/item-comentarios.html"
     
 })
 public class PrincipalServlet extends HttpServlet {

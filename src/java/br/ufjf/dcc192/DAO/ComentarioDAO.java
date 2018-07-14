@@ -177,25 +177,25 @@ public class ComentarioDAO {
         try {
 
             Statement comando = conexao.createStatement();
-            ResultSet resultado2 = comando.executeQuery("SELECT * from Comentario inner join Avaliacao "
-                    + "on Comentario.id = idComentario "
+            ResultSet resultado2 = comando.executeQuery("SELECT texto,dataCriacao,dataAtualizacao,Avaliacao.idComentario,curti,Dislike,Avaliacao.id,Avaliacao.idusuario from Comentario inner join Avaliacao "
+                    + "on Comentario.id = Avaliacao.idComentario "
                     + "WHERE Comentario.iditem ="
                     + idItem + " AND Comentario.idusuario= " +idUsuario);
             if (resultado2.next()) {
                 c = new Comentario(
-                        UsuarioDAO.getInstace().getUsuario(resultado2.getInt("idusuario")),
+                        UsuarioDAO.getInstace().getUsuario(resultado2.getInt("Avaliacao.idusuario")),
                         resultado2.getString("texto"),
                         resultado2.getDate("dataCriacao"),
                         resultado2.getDate("dataAtualizacao"),
                         item,
-                        resultado2.getInt("idComentario")
+                        resultado2.getInt("Avaliacao.idComentario")
                 );
                 c.setAvaliacao(new Avaliacao(resultado2.getInt("curti"),
-                         resultado2.getInt("Avaliacao.Dislike"),
+                         resultado2.getInt("Dislike"),
                          resultado2.getInt("Avaliacao.id"),
                          item.getUsuario().getId(),
                          item.getId(),
-                         resultado2.getInt("idComentario")));
+                         resultado2.getInt("Avaliacao.idComentario")));
 
             }else{
                 resultado2 = comando.executeQuery("SELECT * from Comentario"
@@ -246,10 +246,13 @@ public class ComentarioDAO {
         try {
             comentariosItem = new ArrayList<>();
             Statement comando = conexao.createStatement();
-            ResultSet resultado2 = comando.executeQuery("SELECT * from Comentario inner join Avaliacao "
-                    + "on Comentario.id = idComentario "
-                    + "WHERE Comentario.iditem ="
-                    + idItem + " order by datacriacao");
+            ResultSet resultado2 = comando.executeQuery("SELECT c.texto,c.dataCriacao,c.dataAtualizacao,"
+                    + "a.idComentario,a.curti,a.Dislike,a.id,c.idusuario "
+                    + "from Comentario as c inner join Avaliacao as a "
+                    + "on c.id = a.idComentario "
+                    + "WHERE c.iditem ="
+                    + idItem + " order by c.datacriacao");
+            
             while (resultado2.next()) {
                 Comentario c = new Comentario(
                         UsuarioDAO.getInstace().getUsuario(resultado2.getInt("idusuario")),
@@ -259,9 +262,9 @@ public class ComentarioDAO {
                         item,
                         resultado2.getInt("idComentario")
                 );
-                c.setAvaliacao(new Avaliacao(resultado2.getInt("curtir"),
-                         resultado2.getInt("Avaliacao.Dislike"),
-                         resultado2.getInt("Avaliacao.id"),
+                c.setAvaliacao(new Avaliacao(resultado2.getInt("curti"),
+                         resultado2.getInt("Dislike"),
+                         resultado2.getInt("id"),
                          item.getUsuario().getId(),
                          item.getId(),
                          resultado2.getInt("idComentario")));
