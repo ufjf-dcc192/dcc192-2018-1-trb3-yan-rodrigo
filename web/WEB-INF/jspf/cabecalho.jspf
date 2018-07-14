@@ -17,8 +17,9 @@
         <aside>
             <menu>
                 <li><a href="index.html">Home</a></li>
-                <li><a href="item-listar.html">Meus Itens</a></li>
                 <li><a href="ranking.html">Buscar Item</a></li>
+                <li><a href="item-listar.html">Meus Itens</a></li>
+                <li><a href="meus-comentarios.html">Meus Comentários</a></li>
                 <%if(request.getSession().getAttribute("id") != null){
                     
                     %>

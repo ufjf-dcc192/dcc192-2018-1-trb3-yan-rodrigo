@@ -125,10 +125,21 @@ public class AvaliacaoDAO {
         return itens;
     }
 
-    public void removeAvaliacao(int idItem) {
+    public void removeAvaliacaoItem(int idItem) {
         try {
             Statement comando = conexao.createStatement();
             comando.executeUpdate(String.format("DELETE FROM Avaliacao WHERE idItem=%d",
+                    idItem));
+            comando.close();
+        } catch (SQLException ex) {
+            Logger.getLogger(AvaliacaoDAO.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+    }
+    public void removeAvaliacaoComentario(int idItem) {
+        try {
+            Statement comando = conexao.createStatement();
+            comando.executeUpdate(String.format("DELETE FROM Avaliacao WHERE idComentario=%d",
                     idItem));
             comando.close();
         } catch (SQLException ex) {

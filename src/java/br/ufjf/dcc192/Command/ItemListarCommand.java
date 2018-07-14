@@ -12,13 +12,17 @@ class ItemListarCommand implements Command {
 
     @Override
     public void exec(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        {HttpSession session = request.getSession();
-            request.setAttribute("itens", ItensDAO.getInstace().listAll((int) session.getAttribute("id")));
+        {
+            HttpSession session = request.getSession();
+            String nome = (String) session.getAttribute("nome");
+            if(nome != null && !nome.equals("")){
+                request.setAttribute("itens", ItensDAO.getInstace().listAll((int) session.getAttribute("id")));
                 RequestDispatcher dispachante = request.getRequestDispatcher("/WEB-INF/listaItens.jsp");
                 request.setAttribute("titulo",
                         "Revisão de Itens");
                 dispachante.forward(request, response);
-         
+            }else
+                response.sendRedirect("login.html");
         }
 
     }

@@ -11,6 +11,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -81,7 +82,7 @@ public class ComentarioDAO {
         }
         return item;
     }
-    
+
     public List<Item> listAll(int id) {
         List<Item> itens = new ArrayList<>();
         try {
@@ -98,7 +99,7 @@ public class ComentarioDAO {
                 item.setTitulo(resultado.getString("titulo"));
                 item.setUsuario(UsuarioDAO.getInstace().getUsuario(resultado.getInt("idusuario")));
                 ResultSet resultado2 = comando2.executeQuery("SELECT idComentario,texto,datacriacao,dataatualizacao,(avaliacao.curti - avaliacao.dislike) as curtidas from Comentario inner join Avaliacao "
-                         + "on Comentario.id = idComentario "
+                        + "on Comentario.id = idComentario "
                         + "WHERE Comentario.iditem ="
                         + item.getId() + " order by curtidas");
                 while (resultado2.next()) {
@@ -109,15 +110,14 @@ public class ComentarioDAO {
                             resultado2.getDate("dataAtualizacao"),
                             item,
                             resultado2.getInt("idComentario")
-                            
                     ));
-                     resultado2.close();
-                     comando2.close();
+                    resultado2.close();
+                    comando2.close();
                 }
                 itens.add(item);
             }
             resultado.close();
-           
+
             comando.close();
         } catch (SQLException ex) {
             Logger.getLogger(ComentarioDAO.class.getName()).log(Level.SEVERE, null, ex);
@@ -128,7 +128,19 @@ public class ComentarioDAO {
     public void removeComentario(int idItem) {
         try {
             Statement comando = conexao.createStatement();
-            AvaliacaoDAO.getInstace().removeAvaliacao(idItem);
+            AvaliacaoDAO.getInstace().removeAvaliacaoComentario(idItem);
+            comando.executeUpdate(String.format("DELETE FROM comentario WHERE id=%d",
+                    idItem));
+            comando.close();
+        } catch (SQLException ex) {
+            Logger.getLogger(ComentarioDAO.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+    }
+    
+     public void removeComentarioItem(int idItem) {
+        try {
+            Statement comando = conexao.createStatement();
             comando.executeUpdate(String.format("DELETE FROM comentario WHERE idITEM=%d",
                     idItem));
             comando.close();
@@ -138,18 +150,20 @@ public class ComentarioDAO {
 
     }
 
-    public void addItem(Item i) {
+    public void addComentario(Comentario c) {
         try {
             Statement comando = conexao.createStatement();
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 
-           comando.executeUpdate("INSERT INTO Item(titulo, descricao,links,datacriacao,dataatualizacao,idusuario)"
-                    + " VALUES('" + i.getTitulo()
-                    + "','" + i.getDescricao() + "','" + i.getLink()
-                    + "','" + sdf.format(i.getDataCriacao())
-                    + "','" + sdf.format(i.getDataAtualizacao())
-                    + "'," + i.getUsuario().getId()
+            comando.executeUpdate("INSERT INTO comentario(texto, datacriacao,dataatualizacao,idusuario,iditem)"
+                    + " VALUES('" + c.getTexto()
+                    + "','" + sdf.format(c.getDataCriacao())
+                    + "','" + sdf.format(c.getDataAtualizacao())
+                    + "'," + c.getUsuario().getId()
+                    + "," + c.getItem().getId()
                     + ")");
+            
+            comando.executeUpdate("INSERT INTO avaliacao(curti,dislike,idusuario,idcomentario) VALUES(0,0,"+c.getUsuario().getId()+","+buscaComentario(c.getItem().getId(), c.getUsuario().getId()).getId()+")");
             comando.close();
         } catch (SQLException ex) {
             Logger.getLogger(ComentarioDAO.class.getName()).log(Level.SEVERE, null, ex);
@@ -157,15 +171,85 @@ public class ComentarioDAO {
 
     }
 
-    public ArrayList<Comentario> listComentariosPorData(Item item) {
+    public Comentario buscaComentario(int idItem,int idUsuario) {
+        Comentario c = null;
+        Item item = ItensDAO.getInstace().getItem(idItem);
+        try {
+
+            Statement comando = conexao.createStatement();
+            ResultSet resultado2 = comando.executeQuery("SELECT * from Comentario inner join Avaliacao "
+                    + "on Comentario.id = idComentario "
+                    + "WHERE Comentario.iditem ="
+                    + idItem + " AND Comentario.idusuario= " +idUsuario);
+            if (resultado2.next()) {
+                c = new Comentario(
+                        UsuarioDAO.getInstace().getUsuario(resultado2.getInt("idusuario")),
+                        resultado2.getString("texto"),
+                        resultado2.getDate("dataCriacao"),
+                        resultado2.getDate("dataAtualizacao"),
+                        item,
+                        resultado2.getInt("idComentario")
+                );
+                c.setAvaliacao(new Avaliacao(resultado2.getInt("curti"),
+                         resultado2.getInt("Avaliacao.Dislike"),
+                         resultado2.getInt("Avaliacao.id"),
+                         item.getUsuario().getId(),
+                         item.getId(),
+                         resultado2.getInt("idComentario")));
+
+            }else{
+                resultado2 = comando.executeQuery("SELECT * from Comentario"
+                    + " WHERE iditem ="
+                    + idItem + " AND idusuario= " +idUsuario);
+            if (resultado2.next()) {
+                c = new Comentario(
+                        UsuarioDAO.getInstace().getUsuario(resultado2.getInt("idusuario")),
+                        resultado2.getString("texto"),
+                        resultado2.getDate("dataCriacao"),
+                        resultado2.getDate("dataAtualizacao"),
+                        item,
+                        resultado2.getInt("id")
+                );
+                c.setAvaliacao(new Avaliacao(resultado2.getInt("curtir"),
+                         resultado2.getInt("Avaliacao.Dislike"),
+                         resultado2.getInt("Avaliacao.id"),
+                         item.getUsuario().getId(),
+                         item.getId(),
+                         resultado2.getInt("id")));
+
+            } 
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(ComentarioDAO.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return c;
+    }
+
+     public void editaComentario(String texto,int idUsuario,int idItem) {
+        try {
+            Statement comando = conexao.createStatement();
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+
+            comando.executeUpdate("Update Comentario set texto= '" + texto + "' , "
+                    + " dataatualizacao= '" + sdf.format(new Date())
+                    + "' where idUsuario =" + idUsuario + " AND idItem =" +idItem);
+            comando.close();
+        } catch (SQLException ex) {
+            Logger.getLogger(ItensDAO.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+    }
+    
+    public ArrayList<Comentario> listComentariosPorData(int idItem) {
         ArrayList<Comentario> comentariosItem = null;
+        Item item = ItensDAO.getInstace().getItem(idItem);
         try {
             comentariosItem = new ArrayList<>();
             Statement comando = conexao.createStatement();
             ResultSet resultado2 = comando.executeQuery("SELECT * from Comentario inner join Avaliacao "
                     + "on Comentario.id = idComentario "
                     + "WHERE Comentario.iditem ="
-                    + item.getId() + " order by datacriacao");
+                    + idItem + " order by datacriacao");
             while (resultado2.next()) {
                 Comentario c = new Comentario(
                         UsuarioDAO.getInstace().getUsuario(resultado2.getInt("idusuario")),
@@ -175,14 +259,14 @@ public class ComentarioDAO {
                         item,
                         resultado2.getInt("idComentario")
                 );
-                c.setAvaliacao(new Avaliacao(resultado2.getInt("curtir")
-                        , resultado2.getInt("Avaliacao.Dislike")
-                        ,resultado2.getInt("Avaliacao.id")
-                        , item.getUsuario().getId()
-                        , item.getId()  
-                        , resultado2.getInt("idComentario")));
+                c.setAvaliacao(new Avaliacao(resultado2.getInt("curtir"),
+                         resultado2.getInt("Avaliacao.Dislike"),
+                         resultado2.getInt("Avaliacao.id"),
+                         item.getUsuario().getId(),
+                         item.getId(),
+                         resultado2.getInt("idComentario")));
                 comentariosItem.add(c);
-                
+
             }
         } catch (SQLException ex) {
             Logger.getLogger(ComentarioDAO.class.getName()).log(Level.SEVERE, null, ex);

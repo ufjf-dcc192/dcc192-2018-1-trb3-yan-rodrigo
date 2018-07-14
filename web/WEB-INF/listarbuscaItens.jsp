@@ -17,9 +17,12 @@
             <td>${item.getDataCriacao()}</td>
             <td>${item.getDataAtualizacao()}</td>
             <td>${item.getLink()}</td>
+            <td>
             <c:if test="${logado}">
-                <td><a href="comentar.html?idItem=${item.getId()}" >Comentar</a> <a href="avaliar.html?idItem=${item.getId()}">Avaliar</a></td>
+                <a href="comentar.html?idItem=${item.getId()}" >Comentar</a> <a href="avaliar.html?idItem=${item.getId()}">Avaliar</a>
             </c:if>
+                    <a href="item-comentarios.html?idItem=${item.getId()}" >Exibir Comentários</a>
+            </td>
         </tr>
     </c:forEach>
     

@@ -1,6 +1,6 @@
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <!DOCTYPE html>
-
+<%@include file="jspf/cabecalho.jspf" %>
 <html>
     <form method="POST" action="login.html">
     <table border="1">
@@ -26,3 +26,4 @@
     </table>
 
 </html>
+<%@include file="jspf/rodape.jspf" %>
