@@ -193,6 +193,8 @@ public class AvaliacaoDAO {
 
     }
     
+    
+    
     public int buscaContaAvaliacao(int idComentario){
         int comentario = 0;
         

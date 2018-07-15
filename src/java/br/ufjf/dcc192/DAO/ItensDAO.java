@@ -86,6 +86,52 @@ public class ItensDAO {
         return item;
     }
 
+    public List<Item> naoComentados(int idUsuario) {
+        List<Item> itens = new ArrayList<>();
+        try {
+            Statement comando = conexao.createStatement();
+            ResultSet resultado = comando.executeQuery("SELECT item.id,item.dataatualizacao,item.datacriacao,item.descricao,item.links,item.titulo from Item left join comentario on comentario.iditem = Item.id where titulo not in (select titulo from item inner join comentario on comentario.IDITEM = Item.ID where comentario.IDUSUARIO =" + idUsuario + ") group by item.id,item.dataatualizacao,item.datacriacao,item.descricao,item.links,item.titulo");
+            while(resultado.next()){
+            Item item = new Item();
+            item.setId(resultado.getInt("id"));
+            item.setDataAtualizacao(resultado.getDate("dataatualizacao"));
+            item.setDataCriacao(resultado.getDate("datacriacao"));
+            item.setDescricao(resultado.getString("descricao"));
+            item.setLink(resultado.getString("links"));
+            item.setTitulo(resultado.getString("titulo"));
+            itens.add(item);
+            }
+            resultado.close();
+            comando.close();
+        } catch (SQLException ex) {
+            Logger.getLogger(ItensDAO.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
+        return itens;
+        
+    }
+    
+    public List<Item> naoAvaliados(int idUsuario) {
+        List<Item> itens = new ArrayList<>();
+        try {
+            Statement comando = conexao.createStatement();
+            ResultSet resultado = comando.executeQuery("select * from item where id not in (select iditem from avaliacao where idusuario = "+idUsuario+" and idcomentario is null)");
+            while(resultado.next()){
+            Item item = new Item();
+            item.setId(resultado.getInt("id"));
+            item.setDataAtualizacao(resultado.getDate("dataatualizacao"));
+            item.setDataCriacao(resultado.getDate("datacriacao"));
+            item.setDescricao(resultado.getString("descricao"));
+            item.setLink(resultado.getString("links"));
+            item.setTitulo(resultado.getString("titulo"));
+            itens.add(item);
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(ItensDAO.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return itens;
+    }
+
     public List<Item> nomesItem() {
         List<Item> itens = new ArrayList<>();
         try {
@@ -131,14 +177,13 @@ public class ItensDAO {
                             item,
                             resultado2.getInt("idComentario")
                     ));
-                    
-                    
+
                 }
                 itens.add(item);
             }
-            
+
             resultado.close();
-comando2.close();
+            comando2.close();
             comando.close();
         } catch (SQLException ex) {
             Logger.getLogger(ItensDAO.class.getName()).log(Level.SEVERE, null, ex);
@@ -212,10 +257,9 @@ comando2.close();
     }
 
     public Item listAllItem(int id) {
-        
-      Item item = null;
-                
-               
+
+        Item item = null;
+
         try {
             Statement comando = conexao.createStatement();
             Statement comando2 = conexao.createStatement();
@@ -244,7 +288,7 @@ comando2.close();
                     ));
                 }
                 item.setNum(resultado.getInt("curtida"));
-                
+
             }
             resultado.close();
 
@@ -256,7 +300,6 @@ comando2.close();
         return item;
     }
 
-    
     //pega somente o item com sua descrição, id , links e titulo
     public Item getItem(int id) {
         try {
@@ -313,18 +356,18 @@ comando2.close();
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
             ResultSet resultado = comando.executeQuery("Select Max(id) as m from item");
             int n = 0;
-            if(resultado.next()){
+            if (resultado.next()) {
                 n = resultado.getInt("m");
             }
             n = n + 1;
             comando.executeUpdate("INSERT INTO Item(id,titulo, descricao,links,datacriacao,dataatualizacao,idusuario)"
-                    + " VALUES("+n+",'" + i.getTitulo()
+                    + " VALUES(" + n + ",'" + i.getTitulo()
                     + "','" + i.getDescricao() + "','" + i.getLink()
                     + "','" + sdf.format(i.getDataCriacao())
                     + "','" + sdf.format(i.getDataAtualizacao())
                     + "'," + i.getUsuario().getId()
                     + ")");
-            comando.executeUpdate("Insert into avaliacao(curti,dislike,idusuario,iditem) values(0,0,"+i.getUsuario().getId()+","+n+")");
+            comando.executeUpdate("Insert into avaliacao(curti,dislike,idusuario,iditem) values(0,0," + i.getUsuario().getId() + "," + n + ")");
             comando.close();
         } catch (SQLException ex) {
             Logger.getLogger(ItensDAO.class.getName()).log(Level.SEVERE, null, ex);

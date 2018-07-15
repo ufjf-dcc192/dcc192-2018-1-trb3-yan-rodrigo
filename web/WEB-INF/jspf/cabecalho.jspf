@@ -21,6 +21,9 @@
                 <li><a href="item-listar.html">Meus Itens</a></li>
                 <li><a href="meus-comentarios.html">Meus Comentários</a></li>
                 <li><a href="item.html">Exibir Tudo de Um Item</a></li>
+                <li><a href="a-avaliar.html">Itens para serem avaliados ou comentados</a></li>
+                <li><a href="trolls.html">Trolls</a></li>
+                <li><a href="curadores.html">Todos os usuários</a></li>
                 <%if(request.getSession().getAttribute("id") != null){
                     
                     %>

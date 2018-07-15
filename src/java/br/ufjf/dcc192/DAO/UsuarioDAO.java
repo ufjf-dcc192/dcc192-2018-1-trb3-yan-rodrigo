@@ -95,7 +95,7 @@ public class UsuarioDAO {
     }
     
     public Usuario getUsuario(int id){
-        boolean existe = false;
+       
         try {
             Statement comando = conexao.createStatement();
             ResultSet resultado = comando.executeQuery("SELECT * from Usuario where id = "+id );
@@ -111,6 +111,51 @@ public class UsuarioDAO {
 
         return null;
     }
+    
+    public List<Usuario> troll(){
+        List<Usuario> u = new ArrayList<>();
+       
+        try {
+            Statement comando = conexao.createStatement();
+            ResultSet resultado = comando.executeQuery("SELECT sum(curti-dislike) as numCurtidas,Usuario.ID,nome,nomeusuario,email,senha from Usuario inner join comentario on comentario.IDUSUARIO=Usuario.ID inner join avaliacao on avaliacao.IDCOMENTARIO = comentario.ID group by Usuario.id,nome,nomeusuario,email,senha  ");
+            while(resultado.next()) {
+                if(resultado.getInt("numCurtidas") < 0){
+                Usuario user = new Usuario(resultado.getInt("id"), resultado.getString("nome"), resultado.getString("nomeusuario"),
+                    resultado.getString("email"), resultado.getString("senha"));
+                u.add(user);
+                }
+                        
+            }
+            resultado.close();
+            comando.close();
+        } catch (SQLException ex) {
+            Logger.getLogger(UsuarioDAO.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+        return u;
+    }
+    
+     public List<Usuario> curadores(){
+        List<Usuario> u = new ArrayList<>();
+       
+        try {
+            Statement comando = conexao.createStatement();
+            ResultSet resultado = comando.executeQuery("SELECT sum(curti-dislike) as numCurtidas,Usuario.ID,nome,nomeusuario,email,senha from Usuario inner join comentario on comentario.IDUSUARIO=Usuario.ID inner join avaliacao on avaliacao.IDCOMENTARIO = comentario.ID group by Usuario.id,nome,nomeusuario,email,senha order by numCurtidas desc");
+            while(resultado.next()) {
+                Usuario user = new Usuario(resultado.getInt("id"), resultado.getString("nome"), resultado.getString("nomeusuario"),
+                    resultado.getString("email"), resultado.getString("senha"));
+                u.add(user);         
+            }
+            resultado.close();
+            comando.close();
+        } catch (SQLException ex) {
+            Logger.getLogger(UsuarioDAO.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+        return u;
+    }
+    
+    
     
     public void addUsuario(Usuario u) {
         try {

@@ -23,8 +23,8 @@ import javax.servlet.http.HttpServletResponse;
 @WebServlet(name = "PrincipalServlet", urlPatterns = {"/index.html",
     "/usuario-novo.html", "/cadastro.html","/login.html","/logout.html","/item-listar.html",
     "/item-novo.html","/item-excluir.html","/item-editar.html","/ranking.html","/item-ordena-listar.html",
-    "/comentar.html","/item-comentarios.html" , "/avaliar.html","/meus-comentarios.html"
-    ,"/avaliarItem.html","/item.html"
+    "/comentar.html","/item-comentarios.html" , "/avaliar.html","/meus-comentarios.html","/a-avaliar.html"
+    ,"/avaliarItem.html","/item.html","/trolls.html","/curadores.html"
 })
 public class PrincipalServlet extends HttpServlet {
 
@@ -46,6 +46,9 @@ public class PrincipalServlet extends HttpServlet {
         rotas.put("/ranking.html", "br.ufjf.dcc192.Command.rankingCommand");
         rotas.put("/comentar.html", "br.ufjf.dcc192.Command.comentarCommand");
         rotas.put("/avaliar.html", "br.ufjf.dcc192.Command.AvaliarCommand");
+        rotas.put("/a-avaliar.html", "br.ufjf.dcc192.Command.NaoAvaliadosCommand");
+        rotas.put("/trolls.html", "br.ufjf.dcc192.Command.TrollsCommand");
+        rotas.put("/curadores.html", "br.ufjf.dcc192.Command.CuradoresCommand");
         
        
     
