@@ -7,6 +7,7 @@
     <th>Data da Criação</th>
     <th>Data da última atualização</th>
     <th>Avaliação</th>
+    <th>Avaliar</th>
 </thead>
 <tbody>
     <c:forEach var="comentario" items="${comentarios}">
@@ -16,12 +17,15 @@
             <td>${comentario.getDataCriacao()}</td>
             <td>${comentario.getDataAtualizacao()}</td>
             <td>${comentario.getAvaliacao().getLike() - comentario.getAvaliacao().getDislike()}</td>
-        </tr>
-    </c:forEach>
-    
-
-        
-    
+    <form method="post" action="item-comentarios.html?idComentario=${comentario.getId()}&idItem=${idItem}">
+        <td>
+            <input type="submit" value="Gostei"name="btnGostei"/>
+            <input type="submit" value="Não Gostei" name="btnNaoGostei"/>
+            <input type="submit" value="Apagar Avaliação" name="btnApagar"/>
+        </td>
+    </form>
+</tr>
+</c:forEach>
 </tbody>
 
 </table>

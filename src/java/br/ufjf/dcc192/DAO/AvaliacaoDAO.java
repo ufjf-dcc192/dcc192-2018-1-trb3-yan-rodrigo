@@ -113,4 +113,35 @@ public class AvaliacaoDAO {
         }
 
     }
+        public void setAvaliacaoComentario(int curtida, int idUsuario, int idItem, int idComentario) {
+        try {
+            if (curtida == 0) {
+                Statement comando = conexao.createStatement();
+                comando.executeUpdate(String.format("DELETE FROM Avaliacao WHERE idItem=%d AND idUsuario=%d",
+                        idItem, idUsuario));
+                comando.close();
+            } else if (curtida == 1) {
+                //colocar um curtir no banco
+                Statement comando = conexao.createStatement();
+                comando.executeUpdate("INSERT INTO Avaliacao(curti, dislike,idUsuario,idItem, idComentario)"
+                        + " VALUES(" + 1
+                        + "," + 0 + "," + idUsuario
+                        + "," + idItem +","
+                        + idComentario +")");
+                comando.close();
+            } else {
+                //colocar dislik no banco
+                Statement comando = conexao.createStatement();
+                comando.executeUpdate("INSERT INTO Avaliacao(curti, dislike,idUsuario,idItem)"
+                        + " VALUES(" + 0
+                        + "," + 1 + "," + idUsuario
+                        + "," + idItem +","
+                        +idComentario + ")");
+                comando.close();
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(ItensDAO.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+    }
 }

@@ -73,6 +73,7 @@ public class PrincipalServlet extends HttpServlet {
         rotas.put("/ranking.html", "br.ufjf.dcc192.Command.rankingCommandPost");
         rotas.put("/comentar.html", "br.ufjf.dcc192.Command.comentarCommandPost");
         rotas.put("/avaliarItem.html", "br.ufjf.dcc192.Command.AvaliarCommandPost");
+        rotas.put("/item-comentarios.html", "br.ufjf.dcc192.Command.ItemComentariosCommandPost");
         
     
         String clazzName = rotas.get(request.getServletPath());

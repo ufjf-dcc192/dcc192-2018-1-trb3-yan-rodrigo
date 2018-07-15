@@ -26,7 +26,7 @@ class AvaliarCommandPost implements Command {
             }else{
                 AvaliacaoDAO.getInstace().setAvaliacaoItem(-1, idUsuario, idItem);
             }
-            response.sendRedirect("ranking.html");;
+            response.sendRedirect("ranking.html");
 
         }
 
