@@ -40,91 +40,6 @@ public class AvaliacaoDAO {
 
     }
 
-    public Item listItem(int idItem) {
-        Item item = null;
-        try {
-            Statement comando = conexao.createStatement();
-            Statement comando2 = conexao.createStatement();
-            ResultSet resultado = comando.executeQuery("SELECT * from Item WHERE id = " + idItem);
-            if (resultado.next()) {
-                int i = 0;
-                item = new Item();
-                item.setId(resultado.getInt("id"));
-                item.setDataAtualizacao(resultado.getDate("dataatualizacao"));
-                item.setDataCriacao(resultado.getDate("datacriacao"));
-                item.setDescricao(resultado.getString("descricao"));
-                item.setLink(resultado.getString("links"));
-                item.setTitulo(resultado.getString("titulo"));
-                item.setUsuario(UsuarioDAO.getInstace().getUsuario(resultado.getInt("idusuario")));
-                ResultSet resultado2 = comando2.executeQuery("SELECT *,avaliacao.curti - avaliacao.dislike as curtidas from Comentario inner join Avaliacao "
-                        + "on Comentario.id = idComentario "
-                        + "WHERE Comentario.iditem ="
-                        + item.getId() + " order by curtidas");
-                while (resultado2.next() && i < 5) {
-                    item.getComentarios().add(new Comentario(
-                            UsuarioDAO.getInstace().getUsuario(resultado2.getInt("idusuario")),
-                            resultado2.getString("texto"),
-                            resultado2.getDate("dataCriacao"),
-                            resultado2.getDate("dataAtualizacao"),
-                            item,
-                            resultado2.getInt("idComentario")
-                    ));
-                    i++;
-                }
-                resultado2.close();
-                comando2.close();
-            }
-            resultado.close();
-            comando.close();
-        } catch (SQLException ex) {
-            Logger.getLogger(AvaliacaoDAO.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        return item;
-    }
-    
-    public List<Item> listAll(int id) {
-        List<Item> itens = new ArrayList<>();
-        try {
-            Statement comando = conexao.createStatement();
-            Statement comando2 = conexao.createStatement();
-            ResultSet resultado = comando.executeQuery("SELECT * from Item WHERE idusuario = " + id);
-            while (resultado.next()) {
-                Item item = new Item();
-                item.setId(resultado.getInt("id"));
-                item.setDataAtualizacao(resultado.getDate("dataatualizacao"));
-                item.setDataCriacao(resultado.getDate("datacriacao"));
-                item.setDescricao(resultado.getString("descricao"));
-                item.setLink(resultado.getString("links"));
-                item.setTitulo(resultado.getString("titulo"));
-                item.setUsuario(UsuarioDAO.getInstace().getUsuario(resultado.getInt("idusuario")));
-                ResultSet resultado2 = comando2.executeQuery("SELECT idComentario,texto,datacriacao,dataatualizacao,(avaliacao.curti - avaliacao.dislike) as curtidas from Comentario inner join Avaliacao "
-                         + "on Comentario.id = idComentario "
-                        + "WHERE Comentario.iditem ="
-                        + item.getId() + " order by curtidas");
-                while (resultado2.next()) {
-                    item.getComentarios().add(new Comentario(
-                            UsuarioDAO.getInstace().getUsuario(id),
-                            resultado2.getString("texto"),
-                            resultado2.getDate("dataCriacao"),
-                            resultado2.getDate("dataAtualizacao"),
-                            item,
-                            resultado2.getInt("idComentario")
-                            
-                    ));
-                     resultado2.close();
-                     comando2.close();
-                }
-                itens.add(item);
-            }
-            resultado.close();
-           
-            comando.close();
-        } catch (SQLException ex) {
-            Logger.getLogger(AvaliacaoDAO.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        return itens;
-    }
-
     public void removeAvaliacaoItem(int idItem) {
         try {
             Statement comando = conexao.createStatement();
@@ -134,8 +49,8 @@ public class AvaliacaoDAO {
         } catch (SQLException ex) {
             Logger.getLogger(AvaliacaoDAO.class.getName()).log(Level.SEVERE, null, ex);
         }
-
     }
+
     public void removeAvaliacaoComentario(int idItem) {
         try {
             Statement comando = conexao.createStatement();
@@ -153,7 +68,7 @@ public class AvaliacaoDAO {
             Statement comando = conexao.createStatement();
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 
-           comando.executeUpdate("INSERT INTO Item(titulo, descricao,links,datacriacao,dataatualizacao,idusuario)"
+            comando.executeUpdate("INSERT INTO Item(titulo, descricao,links,datacriacao,dataatualizacao,idusuario)"
                     + " VALUES('" + i.getTitulo()
                     + "','" + i.getDescricao() + "','" + i.getLink()
                     + "','" + sdf.format(i.getDataCriacao())
@@ -167,37 +82,35 @@ public class AvaliacaoDAO {
 
     }
 
-    public ArrayList<Comentario> listComentariosPorData(Item item) {
-        ArrayList<Comentario> comentariosItem = null;
+    public void setAvaliacaoItem(int curtida, int idUsuario, int idItem) {
         try {
-            comentariosItem = new ArrayList<>();
-            Statement comando = conexao.createStatement();
-            ResultSet resultado2 = comando.executeQuery("SELECT * from Comentario inner join Avaliacao "
-                    + "on Comentario.id = idComentario "
-                    + "WHERE Comentario.iditem ="
-                    + item.getId() + " order by datacriacao");
-            while (resultado2.next()) {
-                Comentario c = new Comentario(
-                        UsuarioDAO.getInstace().getUsuario(resultado2.getInt("idusuario")),
-                        resultado2.getString("texto"),
-                        resultado2.getDate("dataCriacao"),
-                        resultado2.getDate("dataAtualizacao"),
-                        item,
-                        resultado2.getInt("idComentario")
-                );
-                c.setAvaliacao(new Avaliacao(resultado2.getInt("curtir")
-                        , resultado2.getInt("Avaliacao.Dislike")
-                        ,resultado2.getInt("Avaliacao.id")
-                        , item.getUsuario().getId()
-                        , item.getId()  
-                        , resultado2.getInt("idComentario")));
-                comentariosItem.add(c);
-                
+            if (curtida == 0) {
+                Statement comando = conexao.createStatement();
+                comando.executeUpdate(String.format("DELETE FROM Avaliacao WHERE idItem=%d AND idUsuario=%d",
+                        idItem, idUsuario));
+                comando.close();
+            } else if (curtida == 1) {
+                //colocar um curtir no banco
+                Statement comando = conexao.createStatement();
+                comando.executeUpdate("INSERT INTO Avaliacao(curti, dislike,idUsuario,idItem)"
+                        + " VALUES(" + 1
+                        + "," + 0 + "," + idUsuario
+                        + "," + idItem
+                        + ")");
+                comando.close();
+            } else {
+                //colocar dislik no banco
+                Statement comando = conexao.createStatement();
+                comando.executeUpdate("INSERT INTO Avaliacao(curti, dislike,idUsuario,idItem)"
+                        + " VALUES(" + 0
+                        + "," + 1 + "," + idUsuario
+                        + "," + idItem
+                        + ")");
+                comando.close();
             }
         } catch (SQLException ex) {
-            Logger.getLogger(AvaliacaoDAO.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(ItensDAO.class.getName()).log(Level.SEVERE, null, ex);
         }
-        return comentariosItem;
-    }
 
+    }
 }

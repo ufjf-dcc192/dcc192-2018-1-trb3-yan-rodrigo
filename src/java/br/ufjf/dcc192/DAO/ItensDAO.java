@@ -40,6 +40,7 @@ public class ItensDAO {
 
     }
 
+    //pega o item inteiro, contendo inclusive os comentarios
     public Item listItem(int idItem) {
         Item item = null;
         try {
@@ -176,12 +177,12 @@ public class ItensDAO {
                             resultado2.getInt("idComentario")
                     ));
                 }
-                
+
                 itens.add(item);
             }
             resultado.close();
-            
-                comando2.close();
+
+            comando2.close();
             comando.close();
         } catch (SQLException ex) {
             Logger.getLogger(ItensDAO.class.getName()).log(Level.SEVERE, null, ex);
@@ -189,6 +190,7 @@ public class ItensDAO {
         return itens;
     }
 
+    //pega somente o item com sua descrição, id , links e titulo
     public Item getItem(int id) {
         try {
             Statement comando = conexao.createStatement();
@@ -290,4 +292,5 @@ public class ItensDAO {
         return comentariosItem;
     }
 
+    
 }
