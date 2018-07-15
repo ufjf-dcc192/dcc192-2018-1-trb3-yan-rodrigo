@@ -19,9 +19,11 @@ class ItemComentariosCommandPost implements Command {
             int idUsuario = (int) session.getAttribute("id");
             int idItem = Integer.parseInt(request.getParameter("idItem"));
             int idComentario = Integer.parseInt(request.getParameter("idComentario"));
-            request.setAttribute("comentarios", ComentarioDAO.getInstace().listComentariosPorData(Integer.parseInt(request.getParameter("idItem"))));
-            request.setAttribute("idItem", request.getParameter("idItem"));
-            RequestDispatcher dispachante = request.getRequestDispatcher("/WEB-INF/listarComentarioItem.jsp");
+            String nome = (String) session.getAttribute("nome");
+                if(nome != null && !nome.equals(""))
+                    request.setAttribute("logado", true);
+                else
+                    request.setAttribute("logado", false);
             request.setAttribute("titulo",
                     "Revisão de Itens");
             if ("Gostei".equals(request.getParameter("btnGostei")) ||
@@ -34,6 +36,10 @@ class ItemComentariosCommandPost implements Command {
             }else{
                 AvaliacaoDAO.getInstace().setAvaliacaoComentario(-1, idUsuario, idItem, idComentario);
             }
+            
+            request.setAttribute("comentarios", ComentarioDAO.getInstace().listComentariosPorData(Integer.parseInt(request.getParameter("idItem"))));
+            request.setAttribute("idItem", request.getParameter("idItem"));
+            RequestDispatcher dispachante = request.getRequestDispatcher("/WEB-INF/listarComentarioItem.jsp");
             
             dispachante.forward(request, response);
 

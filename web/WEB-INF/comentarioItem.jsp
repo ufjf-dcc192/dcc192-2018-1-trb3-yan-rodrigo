@@ -5,7 +5,7 @@
     
     <label>Data da Criação : ${comentario.getDataCriacao()}</label><br>
     <label>Data da última atualização : ${comentario.getDataAtualizacao()}</label><br>
-    <label>Nota de Avaliação : ${comentario.getAvaliacao().getLike() - comentario.getAvaliacao().getDislike()}</label> <br>          
+    <label>Nota de Avaliação : ${comentario.getAvaliacao().getLike()}</label> <br>          
     <input type="hidden" name="txtData" value="${comentario.getDataCriacao()}">
     <input type="hidden" name="idComentario" value="${comentario.getId()}">
     

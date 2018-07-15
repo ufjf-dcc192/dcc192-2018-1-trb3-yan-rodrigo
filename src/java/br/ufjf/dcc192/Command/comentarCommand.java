@@ -1,5 +1,7 @@
 package br.ufjf.dcc192.Command;
 
+import br.ufjf.dcc192.Classes.Comentario;
+import br.ufjf.dcc192.DAO.AvaliacaoDAO;
 import br.ufjf.dcc192.DAO.ComentarioDAO;
 import br.ufjf.dcc192.DAO.ItensDAO;
 import java.io.IOException;
@@ -15,7 +17,11 @@ class comentarCommand implements Command {
     public void exec(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         {
             HttpSession session = request.getSession();
-            request.setAttribute("comentario", ComentarioDAO.getInstace().buscaComentario(Integer.parseInt(request.getParameter("idItem")),(int)session.getAttribute("id")));
+            Comentario c = ComentarioDAO.getInstace().buscaComentario(Integer.parseInt(request.getParameter("idItem")),(int)session.getAttribute("id"));
+            if(c != null){
+                c.getAvaliacao().setLike(AvaliacaoDAO.getInstace().buscaContaAvaliacao(c.getId()));
+            }
+            request.setAttribute("comentario",c );
             request.setAttribute("idItem", request.getParameter("idItem"));
             RequestDispatcher dispachante = request.getRequestDispatcher("/WEB-INF/comentarioItem.jsp");
             request.setAttribute("titulo",

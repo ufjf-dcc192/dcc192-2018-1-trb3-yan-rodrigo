@@ -5,6 +5,7 @@
  */
 package br.ufjf.dcc192.Command;
 
+import br.ufjf.dcc192.Classes.Usuario;
 import java.io.IOException;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -19,7 +20,10 @@ public class LogoutCommand implements Command {
 
     @Override
     public void exec(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-           HttpSession session = request.getSession(true);
+           
+        
+        HttpSession session = request.getSession(true);
+           
             if (session != null) {
                 session.invalidate();
             }

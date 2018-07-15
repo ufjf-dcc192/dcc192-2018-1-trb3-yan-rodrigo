@@ -113,35 +113,100 @@ public class AvaliacaoDAO {
         }
 
     }
-        public void setAvaliacaoComentario(int curtida, int idUsuario, int idItem, int idComentario) {
+
+    public boolean getAvaliacaoComentarioUsuario(int idUsuario, int idItem, int idComentario) {
+        try {
+            Statement comando = conexao.createStatement();
+            ResultSet resultado = comando.executeQuery("Select * from avaliacao where idUsuario=" + idUsuario + " and idItem=" + idItem + " and idComentario=" + idComentario);
+            if (resultado.next()) {
+                return true;
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(AvaliacaoDAO.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return false;
+    }
+
+    public void setAvaliacaoComentario(int curtida, int idUsuario, int idItem, int idComentario) {
         try {
             if (curtida == 0) {
-                Statement comando = conexao.createStatement();
-                comando.executeUpdate(String.format("DELETE FROM Avaliacao WHERE idItem=%d AND idUsuario=%d",
-                        idItem, idUsuario));
-                comando.close();
+                 if (!getAvaliacaoComentarioUsuario(idUsuario, idItem, idComentario)) {
+                    //colocar dislik no banco
+                    Statement comando = conexao.createStatement();
+                    comando.executeUpdate("INSERT INTO Avaliacao(curti, dislike,idUsuario,idItem)"
+                            + " VALUES(" + 0
+                            + "," + 0 + "," + idUsuario
+                            + "," + idItem + ","
+                            + idComentario + ")");
+                    comando.close();
+                } else {
+                    Statement comando = conexao.createStatement();
+                    comando.executeUpdate("Update Avaliacao set"
+                            + " curti=" + 0
+                            + ",dislike=" + 0 + " where idusuario=" + idUsuario
+                            + "and iditem=" + idItem + "and idcomentario="
+                            + idComentario);
+                    comando.close();
+                }
             } else if (curtida == 1) {
                 //colocar um curtir no banco
-                Statement comando = conexao.createStatement();
-                comando.executeUpdate("INSERT INTO Avaliacao(curti, dislike,idUsuario,idItem, idComentario)"
-                        + " VALUES(" + 1
-                        + "," + 0 + "," + idUsuario
-                        + "," + idItem +","
-                        + idComentario +")");
-                comando.close();
+                if (!getAvaliacaoComentarioUsuario(idUsuario, idItem, idComentario)) {
+                    Statement comando = conexao.createStatement();
+                    comando.executeUpdate("INSERT INTO Avaliacao(curti, dislike,idUsuario,idItem, idComentario)"
+                            + " VALUES(" + 1
+                            + "," + 0 + "," + idUsuario
+                            + "," + idItem + ","
+                            + idComentario + ")");
+                    comando.close();
+                } else {
+                    Statement comando = conexao.createStatement();
+                    comando.executeUpdate("Update Avaliacao set"
+                            + " curti=" + 1
+                            + ",dislike=" + 0 + " where idusuario=" + idUsuario
+                            + "and iditem=" + idItem + "and idcomentario="
+                            + idComentario);
+                    comando.close();
+                }
             } else {
-                //colocar dislik no banco
-                Statement comando = conexao.createStatement();
-                comando.executeUpdate("INSERT INTO Avaliacao(curti, dislike,idUsuario,idItem)"
-                        + " VALUES(" + 0
-                        + "," + 1 + "," + idUsuario
-                        + "," + idItem +","
-                        +idComentario + ")");
-                comando.close();
+                if (!getAvaliacaoComentarioUsuario(idUsuario, idItem, idComentario)) {
+                    //colocar dislik no banco
+                    Statement comando = conexao.createStatement();
+                    comando.executeUpdate("INSERT INTO Avaliacao(curti, dislike,idUsuario,idItem,idcomentario)"
+                            + " VALUES(" + 0
+                            + "," + 1 + "," + idUsuario
+                            + "," + idItem + ","
+                            + idComentario + ")");
+                    comando.close();
+                } else {
+                    Statement comando = conexao.createStatement();
+                    comando.executeUpdate("Update Avaliacao set"
+                            + " curti=" + 0
+                            + ",dislike=" + 1 + " where idusuario=" + idUsuario
+                            + "and iditem=" + idItem + "and idcomentario="
+                            + idComentario);
+                    comando.close();
+                }
             }
         } catch (SQLException ex) {
             Logger.getLogger(ItensDAO.class.getName()).log(Level.SEVERE, null, ex);
         }
 
+    }
+    
+    public int buscaContaAvaliacao(int idComentario){
+        int comentario = 0;
+        
+        try {
+            Statement comando = conexao.createStatement();
+            ResultSet resultado = comando.executeQuery("Select SUM(Curti - dislike) as soma from avaliacao where idCOmentario=" + idComentario +" group by idcomentario");
+            
+            if(resultado.next()){
+                comentario = resultado.getInt("soma");
+            }
+            comando.close();
+        } catch (SQLException ex) {
+            Logger.getLogger(AvaliacaoDAO.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return comentario;
     }
 }

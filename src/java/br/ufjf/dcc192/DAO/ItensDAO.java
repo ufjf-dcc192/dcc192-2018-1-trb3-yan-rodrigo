@@ -57,19 +57,22 @@ public class ItensDAO {
                 item.setLink(resultado.getString("links"));
                 item.setTitulo(resultado.getString("titulo"));
                 item.setUsuario(UsuarioDAO.getInstace().getUsuario(resultado.getInt("idusuario")));
-                ResultSet resultado2 = comando2.executeQuery("SELECT *,avaliacao.curti - avaliacao.dislike as curtidas from Comentario inner join Avaliacao "
+                ResultSet resultado2 = comando2.executeQuery("SELECT texto,dataCriacao,dataAtualizacao,idComentario,Comentario.idusuario,sum(avaliacao.curti - avaliacao.dislike) as curtidas from Comentario inner join avaliacao "
                         + "on Comentario.id = idComentario "
                         + "WHERE Comentario.iditem ="
-                        + item.getId() + " order by curtidas");
+                        + item.getId() + " group by texto,dataCriacao,dataAtualizacao,idComentario,Comentario.idusuario order by curtidas desc");
                 while (resultado2.next() && i < 5) {
-                    item.getComentarios().add(new Comentario(
+                    Comentario c = new Comentario(
                             UsuarioDAO.getInstace().getUsuario(resultado2.getInt("idusuario")),
                             resultado2.getString("texto"),
                             resultado2.getDate("dataCriacao"),
                             resultado2.getDate("dataAtualizacao"),
                             item,
                             resultado2.getInt("idComentario")
-                    ));
+                    );
+                    c.setAvaliacao(new Avaliacao());
+                    c.getAvaliacao().setLike(resultado2.getInt("curtidas"));
+                    item.getComentarios().add(c);
                     i++;
                 }
                 resultado2.close();
@@ -81,6 +84,23 @@ public class ItensDAO {
             Logger.getLogger(ItensDAO.class.getName()).log(Level.SEVERE, null, ex);
         }
         return item;
+    }
+
+    public List<Item> nomesItem() {
+        List<Item> itens = new ArrayList<>();
+        try {
+            Statement comando = conexao.createStatement();
+            ResultSet resultado = comando.executeQuery("SELECT * from Item");
+            while (resultado.next()) {
+                Item item = new Item();
+                item.setId(resultado.getInt("id"));
+                item.setTitulo(resultado.getString("titulo"));
+                itens.add(item);
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(ItensDAO.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return itens;
     }
 
     public List<Item> listAll(int id) {
@@ -111,13 +131,14 @@ public class ItensDAO {
                             item,
                             resultado2.getInt("idComentario")
                     ));
-                    resultado2.close();
-                    comando2.close();
+                    
+                    
                 }
                 itens.add(item);
             }
+            
             resultado.close();
-
+comando2.close();
             comando.close();
         } catch (SQLException ex) {
             Logger.getLogger(ItensDAO.class.getName()).log(Level.SEVERE, null, ex);
@@ -130,24 +151,24 @@ public class ItensDAO {
         String itemNome = "";
         switch (ordena) {
             case "Data de Criação":
-                ordena = "SELECT id,dataatualizacao,datacriacao,descricao,links,titulo,idusuario from Item order by DataCriacao desc";
+                ordena = "SELECT Item.id,dataatualizacao,datacriacao,descricao,links,titulo,Item.idusuario,sum(curti - dislike) as curtida from Item join avaliacao on Item.id = avaliacao.iditem where idcomentario is null group by Item.id,dataatualizacao,datacriacao,descricao,links,titulo,Item.idusuario order by DataCriacao desc";
                 itemNome = "";
                 break;
             case "Data de Atualização":
-                ordena = "SELECT id,dataatualizacao,datacriacao,descricao,links,titulo,idusuario from Item order by dataatualizacao desc";
+                ordena = "SELECT Item.id,dataatualizacao,datacriacao,descricao,links,titulo,Item.idusuario,sum(curti - dislike) as curtida from Item join avaliacao on Item.id = avaliacao.iditem where idcomentario is null group by Item.id,dataatualizacao,datacriacao,descricao,links,titulo,Item.idusuario order by dataatualizacao desc";
                 itemNome = "";
                 break;
             case "Número de Avaliações":
-                ordena = "SELECT Item.id,dataatualizacao,datacriacao,descricao,links,titulo,Item.idusuario, (curti + dislike) as curtidas from Item join avaliacao on Item.id = avaliacao.iditem order by (curtidas)";
-                itemNome = "Item.";
+                ordena = "SELECT Item.id,dataatualizacao,datacriacao,descricao,links,titulo,Item.idusuario, sum(curti + dislike) as curtidas, sum(curti - dislike) as curtida from Item join avaliacao on Item.id = avaliacao.iditem where idcomentario is null group by Item.id,dataatualizacao,datacriacao,descricao,links,titulo,Item.idusuario order by (curtidas) desc";
+
                 break;
             case "Melhor Avaliação":
-                ordena = "SELECT Item.id,dataatualizacao,datacriacao,descricao,links,titulo,Item.idusuario, (curti - dislike) as curtidas from Item join avaliacao on Item.id = avaliacao.iditem order by (curtidas)";
-                itemNome = "Item.";
+                ordena = "SELECT Item.id,dataatualizacao,datacriacao,descricao,links,titulo,Item.idusuario, sum(curti - dislike) as curtidas, sum(curti - dislike) as curtida from Item join avaliacao on Item.id = avaliacao.iditem where idcomentario is null group by Item.id,dataatualizacao,datacriacao,descricao,links,titulo,Item.idusuario order by (curtidas) desc";
+
                 break;
             default:
-                ordena = "SELECT Item.id,dataatualizacao,datacriacao,descricao,links,titulo,Item.idusuario, (curti - dislike) as curtidas from Item join avaliacao on Item.id = avaliacao.iditem order by (curtidas) desc";
-                itemNome = "Item.";
+                ordena = "SELECT Item.id,dataatualizacao,datacriacao,descricao,links,titulo,Item.idusuario, sum(curti - dislike) as curtidas, sum(curti - dislike) as curtida from Item join avaliacao on Item.id = avaliacao.iditem where idcomentario is null group by Item.id,dataatualizacao,datacriacao,descricao,links,titulo,Item.idusuario order by (curtidas) ";
+
                 break;
         }
         try {
@@ -177,7 +198,7 @@ public class ItensDAO {
                             resultado2.getInt("idComentario")
                     ));
                 }
-
+                item.setNum(resultado.getInt("curtida"));
                 itens.add(item);
             }
             resultado.close();
@@ -190,6 +211,52 @@ public class ItensDAO {
         return itens;
     }
 
+    public Item listAllItem(int id) {
+        
+      Item item = null;
+                
+               
+        try {
+            Statement comando = conexao.createStatement();
+            Statement comando2 = conexao.createStatement();
+            ResultSet resultado = comando.executeQuery("SELECT Item.id,dataatualizacao,datacriacao,descricao,links,titulo,Item.idusuario,sum(curti - dislike) as curtida from Item join avaliacao on Item.id = avaliacao.iditem where idcomentario is null group by Item.id,dataatualizacao,datacriacao,descricao,links,titulo,Item.idusuario order by DataCriacao desc");
+            if (resultado.next()) {
+                item = new Item();
+                item.setId(resultado.getInt("id"));
+                item.setDataAtualizacao(resultado.getDate("dataatualizacao"));
+                item.setDataCriacao(resultado.getDate("datacriacao"));
+                item.setDescricao(resultado.getString("descricao"));
+                item.setLink(resultado.getString("links"));
+                item.setTitulo(resultado.getString("titulo"));
+                item.setUsuario(UsuarioDAO.getInstace().getUsuario(resultado.getInt("idusuario")));
+                ResultSet resultado2 = comando2.executeQuery("SELECT idComentario,texto,datacriacao,dataatualizacao,(avaliacao.curti - avaliacao.dislike) as curtidas from Comentario inner join Avaliacao "
+                        + "on Comentario.id = idComentario "
+                        + "WHERE Comentario.iditem ="
+                        + item.getId() + " order by curtidas");
+                while (resultado2.next()) {
+                    item.getComentarios().add(new Comentario(
+                            UsuarioDAO.getInstace().getUsuario(resultado.getInt("id")),
+                            resultado2.getString("texto"),
+                            resultado2.getDate("dataCriacao"),
+                            resultado2.getDate("dataAtualizacao"),
+                            item,
+                            resultado2.getInt("idComentario")
+                    ));
+                }
+                item.setNum(resultado.getInt("curtida"));
+                
+            }
+            resultado.close();
+
+            comando2.close();
+            comando.close();
+        } catch (SQLException ex) {
+            Logger.getLogger(ItensDAO.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return item;
+    }
+
+    
     //pega somente o item com sua descrição, id , links e titulo
     public Item getItem(int id) {
         try {
@@ -244,14 +311,20 @@ public class ItensDAO {
         try {
             Statement comando = conexao.createStatement();
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-
-            comando.executeUpdate("INSERT INTO Item(titulo, descricao,links,datacriacao,dataatualizacao,idusuario)"
-                    + " VALUES('" + i.getTitulo()
+            ResultSet resultado = comando.executeQuery("Select Max(id) as m from item");
+            int n = 0;
+            if(resultado.next()){
+                n = resultado.getInt("m");
+            }
+            n = n + 1;
+            comando.executeUpdate("INSERT INTO Item(id,titulo, descricao,links,datacriacao,dataatualizacao,idusuario)"
+                    + " VALUES("+n+",'" + i.getTitulo()
                     + "','" + i.getDescricao() + "','" + i.getLink()
                     + "','" + sdf.format(i.getDataCriacao())
                     + "','" + sdf.format(i.getDataAtualizacao())
                     + "'," + i.getUsuario().getId()
                     + ")");
+            comando.executeUpdate("Insert into avaliacao(curti,dislike,idusuario,iditem) values(0,0,"+i.getUsuario().getId()+","+n+")");
             comando.close();
         } catch (SQLException ex) {
             Logger.getLogger(ItensDAO.class.getName()).log(Level.SEVERE, null, ex);
@@ -292,5 +365,4 @@ public class ItensDAO {
         return comentariosItem;
     }
 
-    
 }

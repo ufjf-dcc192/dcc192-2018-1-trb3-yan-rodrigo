@@ -23,8 +23,8 @@ import javax.servlet.http.HttpServletResponse;
 @WebServlet(name = "PrincipalServlet", urlPatterns = {"/index.html",
     "/usuario-novo.html", "/cadastro.html","/login.html","/logout.html","/item-listar.html",
     "/item-novo.html","/item-excluir.html","/item-editar.html","/ranking.html","/item-ordena-listar.html",
-    "/comentar.html","/item-comentarios.html" , "/avaliar.html"
-    ,"/avaliarItem.html"
+    "/comentar.html","/item-comentarios.html" , "/avaliar.html","/meus-comentarios.html"
+    ,"/avaliarItem.html","/item.html"
 })
 public class PrincipalServlet extends HttpServlet {
 
@@ -41,6 +41,8 @@ public class PrincipalServlet extends HttpServlet {
         rotas.put("/item-editar.html", "br.ufjf.dcc192.Command.ItemEditarCommand");
         rotas.put("/item-ordena-listar.html", "br.ufjf.dcc192.Command.ItemBuscarCommand");
         rotas.put("/item-comentarios.html", "br.ufjf.dcc192.Command.ItemComentariosCommand");
+        rotas.put("/item.html", "br.ufjf.dcc192.Command.ItemCommand");
+        rotas.put("/meus-comentarios.html", "br.ufjf.dcc192.Command.MeusComentariosCommand");
         rotas.put("/ranking.html", "br.ufjf.dcc192.Command.rankingCommand");
         rotas.put("/comentar.html", "br.ufjf.dcc192.Command.comentarCommand");
         rotas.put("/avaliar.html", "br.ufjf.dcc192.Command.AvaliarCommand");
@@ -74,6 +76,7 @@ public class PrincipalServlet extends HttpServlet {
         rotas.put("/comentar.html", "br.ufjf.dcc192.Command.comentarCommandPost");
         rotas.put("/avaliarItem.html", "br.ufjf.dcc192.Command.AvaliarCommandPost");
         rotas.put("/item-comentarios.html", "br.ufjf.dcc192.Command.ItemComentariosCommandPost");
+        rotas.put("/item.html", "br.ufjf.dcc192.Command.ItemCommandPost");
         
     
         String clazzName = rotas.get(request.getServletPath());

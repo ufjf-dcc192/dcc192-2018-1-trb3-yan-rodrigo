@@ -14,6 +14,7 @@ import java.util.Date;
  */
 public class Item {
     private String titulo;
+    private int num;
     private String descricao;
     private String link;
     private Date dataCriacao;
@@ -61,6 +62,14 @@ public class Item {
         this.descricao = descricao;
     }
 
+    public int getNum() {
+        return num;
+    }
+
+    public void setNum(int num) {
+        this.num = num;
+    }
+    
     public String getLink() {
         return link;
     }

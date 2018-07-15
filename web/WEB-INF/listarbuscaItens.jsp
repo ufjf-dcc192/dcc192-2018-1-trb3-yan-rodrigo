@@ -7,6 +7,7 @@
     <th>Data da Criação</th>
     <th>Data da última atualização</th>
     <th>Link</th>
+    <th>Avaliações</th>
     <th>Opções</th>
 </thead>
 <tbody>
@@ -17,6 +18,7 @@
             <td>${item.getDataCriacao()}</td>
             <td>${item.getDataAtualizacao()}</td>
             <td>${item.getLink()}</td>
+            <td>${item.getNum()}</td>
             <td>
             <c:if test="${logado}">
                 <a href="comentar.html?idItem=${item.getId()}" >Comentar</a> <a href="avaliar.html?idItem=${item.getId()}">Avaliar</a>

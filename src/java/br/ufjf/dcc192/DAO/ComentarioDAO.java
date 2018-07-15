@@ -9,6 +9,7 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -83,6 +84,33 @@ public class ComentarioDAO {
         return item;
     }
 
+    public List<Comentario> meusComentarios(int idUsuario){
+            List<Comentario> comentarios = new ArrayList<>();
+        try {
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+            Statement comando = conexao.createStatement();
+            ResultSet resultado = comando.executeQuery("SELECT comentario.id,texto,datacriacao,comentario.iditem,dataatualizacao,sum(curti-dislike) as curtidas from comentario inner join avaliacao on comentario.id = avaliacao.idcomentario WHERE comentario.idusuario = " + idUsuario+" group by comentario.id,texto,datacriacao,comentario.iditem,dataatualizacao");
+            while(resultado.next()){
+                Comentario c = new Comentario();
+                c.setId(resultado.getInt("id"));
+                c.setTexto(resultado.getString("texto"));
+                try {
+                    c.setDataCriacao(sdf.parse(resultado.getString("datacriacao")));
+                    c.setDataAtualizacao(sdf.parse(resultado.getString("dataatualizacao")));
+                } catch (ParseException ex) {
+                    Logger.getLogger(ComentarioDAO.class.getName()).log(Level.SEVERE, null, ex);
+                }
+                c.setAvaliacao(new Avaliacao());
+                c.getAvaliacao().setLike(resultado.getInt("curtidas"));
+                c.setItem(ItensDAO.getInstace().getItem(resultado.getInt("iditem")));
+                comentarios.add(c);
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(ComentarioDAO.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return comentarios;
+    }
+    
     public List<Item> listAll(int id) {
         List<Item> itens = new ArrayList<>();
         try {
@@ -163,7 +191,7 @@ public class ComentarioDAO {
                     + "," + c.getItem().getId()
                     + ")");
             
-            comando.executeUpdate("INSERT INTO avaliacao(curti,dislike,idusuario,idcomentario) VALUES(0,0,"+c.getUsuario().getId()+","+buscaComentario(c.getItem().getId(), c.getUsuario().getId()).getId()+")");
+            comando.executeUpdate("INSERT INTO avaliacao(curti,dislike,idusuario,idcomentario,iditem) VALUES(0,0,"+c.getUsuario().getId()+","+buscaComentario(c.getItem().getId(), c.getUsuario().getId()).getId()+","+c.getItem().getId()+")");
             comando.close();
         } catch (SQLException ex) {
             Logger.getLogger(ComentarioDAO.class.getName()).log(Level.SEVERE, null, ex);
@@ -183,19 +211,19 @@ public class ComentarioDAO {
                     + idItem + " AND Comentario.idusuario= " +idUsuario);
             if (resultado2.next()) {
                 c = new Comentario(
-                        UsuarioDAO.getInstace().getUsuario(resultado2.getInt("Avaliacao.idusuario")),
+                        UsuarioDAO.getInstace().getUsuario(resultado2.getInt("idusuario")),
                         resultado2.getString("texto"),
                         resultado2.getDate("dataCriacao"),
                         resultado2.getDate("dataAtualizacao"),
                         item,
-                        resultado2.getInt("Avaliacao.idComentario")
+                        resultado2.getInt("idComentario")
                 );
                 c.setAvaliacao(new Avaliacao(resultado2.getInt("curti"),
                          resultado2.getInt("Dislike"),
-                         resultado2.getInt("Avaliacao.id"),
+                         resultado2.getInt("id"),
                          item.getUsuario().getId(),
                          item.getId(),
-                         resultado2.getInt("Avaliacao.idComentario")));
+                         resultado2.getInt("idComentario")));
 
             }else{
                 resultado2 = comando.executeQuery("SELECT * from Comentario"
@@ -210,9 +238,9 @@ public class ComentarioDAO {
                         item,
                         resultado2.getInt("id")
                 );
-                c.setAvaliacao(new Avaliacao(resultado2.getInt("curtir"),
-                         resultado2.getInt("Avaliacao.Dislike"),
-                         resultado2.getInt("Avaliacao.id"),
+                c.setAvaliacao(new Avaliacao(resultado2.getInt("curti"),
+                         resultado2.getInt("Dislike"),
+                         resultado2.getInt("id"),
                          item.getUsuario().getId(),
                          item.getId(),
                          resultado2.getInt("id")));
@@ -246,14 +274,14 @@ public class ComentarioDAO {
         try {
             comentariosItem = new ArrayList<>();
             Statement comando = conexao.createStatement();
-            ResultSet resultado2 = comando.executeQuery("SELECT c.texto,c.dataCriacao,c.dataAtualizacao,"
-                    + "a.idComentario,a.curti,a.Dislike,a.id,c.idusuario "
+            ResultSet resultado2 = comando.executeQuery("SELECT SUM(a.curti-a.Dislike) as soma,c.texto,c.dataCriacao,c.dataAtualizacao,"
+                    + "a.idComentario,c.idusuario "
                     + "from Comentario as c inner join Avaliacao as a "
                     + "on c.id = a.idComentario "
                     + "WHERE c.iditem ="
-                    + idItem + " order by c.datacriacao");
-            
-            while (resultado2.next()) {
+                    + idItem + " group by c.texto,c.dataCriacao,c.dataAtualizacao,a.idComentario,c.idusuario order by c.datacriacao ");
+           
+              while (resultado2.next()) {
                 Comentario c = new Comentario(
                         UsuarioDAO.getInstace().getUsuario(resultado2.getInt("idusuario")),
                         resultado2.getString("texto"),
@@ -262,9 +290,9 @@ public class ComentarioDAO {
                         item,
                         resultado2.getInt("idComentario")
                 );
-                c.setAvaliacao(new Avaliacao(resultado2.getInt("curti"),
-                         resultado2.getInt("Dislike"),
-                         resultado2.getInt("id"),
+                c.setAvaliacao(new Avaliacao(resultado2.getInt("soma"),
+                         resultado2.getInt("soma"),
+                         0,
                          item.getUsuario().getId(),
                          item.getId(),
                          resultado2.getInt("idComentario")));
