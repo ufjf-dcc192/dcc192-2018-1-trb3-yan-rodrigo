@@ -26,10 +26,14 @@ Para construção de telas foi utilizado HTML, CSS. Com essas ferramentas foi po
 # Pontos Dificeis:
 
 Foi díficil utilizar alguns left join por conta das avaliações.
+Colocar a aplicação funcionando no Heroku.
+Utilizar o Banco de Dados no Heroku.
 # Melhorias:
 
 *Otimização na parte do banco
 
 *Melhorias no layout
+# Heroku
+https://tranquil-spire-36463.herokuapp.com/index.html
 
 
