@@ -1,6 +1,6 @@
 <%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@include file="jspf/cabecalho.jspf" %>
-
+<div>
 <h2>Itens Não Comentados:</h2>
 <table border="1">
     <thead>
@@ -9,6 +9,7 @@
     <th>Data da Criação</th>
     <th>Data da última atualização</th>
     <th>Link</th>
+    <th>Avaliação</th>
     <th>Opções</th>
 </thead>
 <tbody>
@@ -71,5 +72,5 @@
 </table>
 
         
-
+</div>
 <%@include file="jspf/rodape.jspf" %>

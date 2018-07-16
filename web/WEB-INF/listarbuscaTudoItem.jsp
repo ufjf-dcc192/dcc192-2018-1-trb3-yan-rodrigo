@@ -1,6 +1,6 @@
 <%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@include file="jspf/cabecalho.jspf" %>
-<h2>Dados do Item :</h2>
+<h2>Dados do Item ${item.getId()}</h2>
 <table border="1">
     <thead>
     <th>Titulo</th>

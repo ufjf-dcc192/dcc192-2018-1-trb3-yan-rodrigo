@@ -1,0 +1,105 @@
+
+
+body {
+	margin: 0;
+	padding: 0;
+	background: #F0F0F0 url(images/bg.png) repeat;
+	font-family: 'Source Sans Pro', sans-serif;
+	font-size: 12pt;
+	font-weight: 300;
+	color: #181B20;
+}
+header, footer {
+    background-color: #060335;
+    color: white;
+    width: 1400px;
+}
+
+h1,h2, h3, h4, h5, h6 {
+	margin: 0;
+        padding: 10px;
+        background-color: white;
+}
+
+h1.index{
+    margin: 0;
+    padding: 0px;
+    background-color:  #060335;
+}
+h5.index{
+    margin: 0;
+    padding: 0px;
+    background-color:  #060335}
+
+h4.index{
+    padding: 0px;
+    background-color:  #060335;
+}
+
+footer{
+    text-align: center;
+    background: url(images/shadow.png) no-repeat center top;
+}
+
+
+html{
+    width: 1400px;
+    margin: auto;
+}
+
+
+
+div{
+    background: white;
+}
+
+textarea {
+	overflow:auto;
+}
+
+
+
+menu{
+    width: 1400px;
+    height: 100px;
+    margin: 0px auto;
+    padding: 10px 10px 0px 10px;
+    background: #060335;
+}
+menu li{
+    display: inline-block;
+    width: 144px;
+    text-align: center;
+
+}
+menu a{
+    width: 50px;
+    color: white;
+    text-decoration: none;
+    font-family: sans-serif;
+    font-weight: bold;
+}
+
+table {
+	width:100%;
+        border-collapse: collapse;
+}
+
+thead,tbody,tr,td{
+    background: white;
+    border:1px solid black;
+}
+th{
+   background: gray;
+   color:white;
+    border:1px solid black; 
+}
+
+
+
+
+input[type="submit"], input[type="reset"] {
+	cursor:pointer;
+	width:auto !important;
+       
+}

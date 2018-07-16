@@ -1,12 +1,15 @@
 <%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@include file="jspf/cabecalho.jspf" %>
-<table border="1">
+<div>
+    <h2>Lista dos Meus Comentários</h2>
+    <table border="1">
     <thead>
     <th>Texto</th>
     <th>Data da Criação</th>
     <th>Data da última atualização</th>
     <th>Titulo do Item</th>
     <th>Avaliação do Comentário</th>
+    <th>Opções</th>
 </thead>
 <tbody>
     <c:forEach var="comentario" items="${comentarios}">
@@ -32,5 +35,5 @@
 
 </table>
 
-
+</div>
 <%@include file="jspf/rodape.jspf" %>

@@ -1,6 +1,8 @@
 <%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@include file="jspf/cabecalho.jspf" %>
-<form method="post">
+<div>
+    <h2>Buscar Item</h2>
+    <form method="post">
     <label>Ordenar por: 
         <select name ="itens" >
             <c:forEach var="item" items="${itens}">                
@@ -12,3 +14,4 @@
     </label>
 
     <%@include file="jspf/rodape.jspf" %>
+</div>

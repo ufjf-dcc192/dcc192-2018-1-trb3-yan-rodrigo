@@ -1,5 +1,6 @@
 <%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@include file="jspf/cabecalho.jspf" %>
+<div>
 <h2>Dados do meu comentário</h2>
 <form method="post" action="comentar.html?idItem=${idItem}">
     
@@ -14,4 +15,5 @@
 <input type="submit" value="Salvar"/> </label><br>
 
 </form>
+</div>
 <%@include file="jspf/rodape.jspf" %>

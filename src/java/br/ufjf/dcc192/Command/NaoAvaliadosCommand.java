@@ -17,16 +17,18 @@ class NaoAvaliadosCommand implements Command {
             String nome = (String) session.getAttribute("nome");
             if (nome != null && !nome.equals("")) {
                 request.setAttribute("logado", true);
-            } else {
-                request.setAttribute("logado", false);
-            }
-           
-            RequestDispatcher dispachante = request.getRequestDispatcher("/WEB-INF/naoAvaliadosItem.jsp");
+                RequestDispatcher dispachante = request.getRequestDispatcher("/WEB-INF/naoAvaliadosItem.jsp");
             request.setAttribute("titulo",
                     "Revisão de Itens");
             request.setAttribute("itens", ItensDAO.getInstace().naoComentados((int) session.getAttribute("id")));
             request.setAttribute("itensAvaliar", ItensDAO.getInstace().naoAvaliados((int) session.getAttribute("id")));
             dispachante.forward(request, response);
+            } else {
+                request.setAttribute("logado", false);
+                response.sendRedirect("login.html");
+            }
+           
+            
         }
 
     }

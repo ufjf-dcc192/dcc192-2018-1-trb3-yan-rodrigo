@@ -1,6 +1,8 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@page import="java.util.Date"%>
 <%@page contentType="text/html" pageEncoding="UTF-8"%><!DOCTYPE HTML>
+
+<link rel="stylesheet" href="css/style.css">
 <html>
     <head>
         <meta http-equiv="Content-Type" 
@@ -11,17 +13,20 @@
     <body>
         <header>
             
-            <h1><%=request.getAttribute("titulo")%></h1>
-            <h5>Olá, ${nome}</h5>
+        <h1 class = "index"><%=request.getAttribute("titulo")%></h1>
+       
+            
+            
         </header>
         <aside>
             <menu>
+                <ul>
                 <li><a href="index.html">Home</a></li>
                 <li><a href="ranking.html">Buscar Item</a></li>
                 <li><a href="item-listar.html">Meus Itens</a></li>
                 <li><a href="meus-comentarios.html">Meus Comentários</a></li>
-                <li><a href="item.html">Exibir Tudo de Um Item</a></li>
                 <li><a href="a-avaliar.html">Itens para serem avaliados ou comentados</a></li>
+                <li><a href="item.html">Exibir Tudo de Um Item</a></li>
                 <li><a href="trolls.html">Trolls</a></li>
                 <li><a href="curadores.html">Todos os usuários</a></li>
                 <%if(request.getSession().getAttribute("id") != null){
@@ -34,7 +39,7 @@
                 
                     <%}%>
                 
-                
+                </ul>
             </menu>
         </aside>
         <main>

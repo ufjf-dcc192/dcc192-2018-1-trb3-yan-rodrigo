@@ -14,6 +14,7 @@ class rankingCommandPost implements Command {
     public void exec(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
             HttpSession session = request.getSession();
             request.setAttribute("itens",ItensDAO.getInstace().listAll(request.getParameter("itens")));
+            request.setAttribute("ordenacao",request.getParameter("itens"));
             RequestDispatcher dispachante = request.getRequestDispatcher("/WEB-INF/listarbuscaItens.jsp");
             request.setAttribute("titulo",
                     "Revisão de Itens");

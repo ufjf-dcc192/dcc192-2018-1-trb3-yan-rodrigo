@@ -1,5 +1,6 @@
 <%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
-
+<%@include file="jspf/cabecalho.jspf" %>
+<h2>Editar Item ${param.idItem}</h2>
 <form method="Post" action="item-editar.html?idItem=${item.getId()}">
     <table border="1">
         <tbody>

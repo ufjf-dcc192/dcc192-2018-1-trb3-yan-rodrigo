@@ -1,5 +1,6 @@
 <%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@include file="jspf/cabecalho.jspf" %>
+<h2>Avaliar Comentarios do Item ${param.idItem}</h2>
 <table border="1">
     <thead>
     <th>Usuario</th>

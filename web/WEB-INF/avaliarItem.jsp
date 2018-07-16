@@ -1,5 +1,7 @@
 <%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@include file="jspf/cabecalho.jspf" %>
+<div>
+    <h2>Avaliar Item : ${item.getId()}</h2>
 <form method="POST" action="avaliarItem.html?idItem=${param.idItem}">
     <table border="1">
         <tbody>
@@ -25,5 +27,7 @@
         </tbody>
 
     </table>
+                
+            </div>
 
     <%@include file="jspf/rodape.jspf" %>
