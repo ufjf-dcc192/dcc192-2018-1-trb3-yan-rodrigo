@@ -85,12 +85,26 @@ public class AvaliacaoDAO {
     public void setAvaliacaoItem(int curtida, int idUsuario, int idItem) {
         try {
             if (curtida == 0) {
+                if(!getAvaliacaoItemUsuario(idUsuario, idItem)){
                 Statement comando = conexao.createStatement();
-                comando.executeUpdate(String.format("DELETE FROM Avaliacao WHERE idItem=%d AND idUsuario=%d",
-                        idItem, idUsuario));
-                comando.close();
+                    comando.executeUpdate("INSERT INTO Avaliacao(curti, dislike,idUsuario,idItem)"
+                            + " VALUES(" + 0
+                            + "," + 0 + "," + idUsuario
+                            + "," + idItem + ","
+                            +  ")");
+                    comando.close();
+                }else{
+                                    Statement comando = conexao.createStatement();
+                    comando.executeUpdate("Update Avaliacao set"
+                            + " curti=" + 0
+                            + ",dislike=" + 0 + " where idusuario=" + idUsuario
+                            + "and iditem=" + idItem + "and idcomentario is null");
+                            
+                    comando.close();
+                }
             } else if (curtida == 1) {
                 //colocar um curtir no banco
+                 if(!getAvaliacaoItemUsuario(idUsuario, idItem)){
                 Statement comando = conexao.createStatement();
                 comando.executeUpdate("INSERT INTO Avaliacao(curti, dislike,idUsuario,idItem)"
                         + " VALUES(" + 1
@@ -98,15 +112,34 @@ public class AvaliacaoDAO {
                         + "," + idItem
                         + ")");
                 comando.close();
+                 }else{
+                  Statement comando = conexao.createStatement();
+                    comando.executeUpdate("Update Avaliacao set"
+                            + " curti=" + 1
+                            + ",dislike=" + 0 + " where idusuario=" + idUsuario
+                            + "and iditem=" + idItem + "and idcomentario is null"
+                            );
+                    comando.close();
+                 }
             } else {
                 //colocar dislik no banco
+                if(!getAvaliacaoItemUsuario(idUsuario, idItem)){
                 Statement comando = conexao.createStatement();
                 comando.executeUpdate("INSERT INTO Avaliacao(curti, dislike,idUsuario,idItem)"
                         + " VALUES(" + 0
                         + "," + 1 + "," + idUsuario
                         + "," + idItem
                         + ")");
-                comando.close();
+                comando.close();}else{
+                    Statement comando = conexao.createStatement();
+                    comando.executeUpdate("Update Avaliacao set"
+                            + " curti=" + 0
+                            + ",dislike=" + 1 + " where idusuario=" + idUsuario
+                            + "and iditem=" + idItem + "and idcomentario is null"
+                            );
+                    comando.close();
+                
+                }
             }
         } catch (SQLException ex) {
             Logger.getLogger(ItensDAO.class.getName()).log(Level.SEVERE, null, ex);
@@ -126,6 +159,19 @@ public class AvaliacaoDAO {
         }
         return false;
     }
+    
+    public boolean getAvaliacaoItemUsuario(int idUsuario, int idItem) {
+        try {
+            Statement comando = conexao.createStatement();
+            ResultSet resultado = comando.executeQuery("Select * from avaliacao where idUsuario=" + idUsuario + " and idItem=" + idItem + " and idComentario is null");
+            if (resultado.next()) {
+                return true;
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(AvaliacaoDAO.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return false;
+    }
 
     public void setAvaliacaoComentario(int curtida, int idUsuario, int idItem, int idComentario) {
         try {
@@ -133,7 +179,7 @@ public class AvaliacaoDAO {
                  if (!getAvaliacaoComentarioUsuario(idUsuario, idItem, idComentario)) {
                     //colocar dislik no banco
                     Statement comando = conexao.createStatement();
-                    comando.executeUpdate("INSERT INTO Avaliacao(curti, dislike,idUsuario,idItem)"
+                    comando.executeUpdate("INSERT INTO Avaliacao(curti, dislike,idUsuario,idItem,idcomentario)"
                             + " VALUES(" + 0
                             + "," + 0 + "," + idUsuario
                             + "," + idItem + ","
