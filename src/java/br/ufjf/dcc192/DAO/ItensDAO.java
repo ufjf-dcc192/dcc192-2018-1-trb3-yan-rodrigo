@@ -46,7 +46,7 @@ public class ItensDAO {
         try {
             Statement comando = conexao.createStatement();
             Statement comando2 = conexao.createStatement();
-            ResultSet resultado = comando.executeQuery("SELECT Item.id,datacriacao,dataatualizacao,descricao,links,titulo,Item.idusuario, SUM(curti-dislike) as curtidas from Item inner join avaliacao on Item.id = avaliacao.idItem WHERE Item.id = " + idItem + " group by Item.id,datacriacao,dataatualizacao,descricao,links,titulo,Item.idusuario");
+            ResultSet resultado = comando.executeQuery("SELECT Item.id,datacriacao,dataatualizacao,descricao,links,titulo,Item.idusuario, SUM(curti-dislike) as curtidas from Item inner join avaliacao on Item.id = avaliacao.idItem WHERE Item.id = " + idItem + " and idcomentario is null group by Item.id,datacriacao,dataatualizacao,descricao,links,titulo,Item.idusuario");
             if (resultado.next()) {
                 int i = 0;
                 item = new Item();
